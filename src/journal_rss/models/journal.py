@@ -1,3 +1,4 @@
+
 from typing import Optional, TYPE_CHECKING, List
 from datetime import datetime
 from sqlmodel import SQLModel, Field, Relationship
@@ -23,10 +24,16 @@ class JournalCreate(JournalBase):
         """
         See https://api.crossref.org/swagger-ui/index.html#/Journals/get_journals
         """
+        # if issns match, prune duplicates
+        if len(res['ISSN']) > 1 and any([i == res['ISSN'][0] for i in res['ISSN'][1:]]):
+            issns = [res['issn-type'][0]]
+        else:
+            issns = res['issn-type']
+
         return JournalCreate(
             title=res['title'],
             publisher=res['publisher'],
-            issn = res['issn-type']
+            issn = issns
         )
 
 

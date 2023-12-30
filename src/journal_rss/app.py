@@ -54,11 +54,15 @@ async def search(request: Request, search: Annotated[str, Form()]):
             if existing_issn is not None:
                 continue
 
+
             db_journal = models.Journal.model_validate(r.model_dump())
             for issn in r.issn:
                 db_journal.issn.append(models.ISSN(**issn.model_dump()))
             session.add(db_journal)
-        session.commit()
+            # flush here because we sometimes get duplicates in the results
+            # and need to catch them on the next check
+            # we'll do perf later lmao
+            session.commit()
 
     return templates.TemplateResponse(
         'partials/feed-list.html',
