@@ -1,0 +1,1 @@
+from journal_rss.config import Config

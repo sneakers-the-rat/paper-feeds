@@ -1,0 +1,25 @@
+<table class="table">
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th>ISSN</th>
+      <th>Publisher</th>
+      <th>Feed</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for journal in journals %}
+    <tr>
+        <td><a href="/journals/{{ journal.issn[0].value }}">{{ journal.title }}</a></td>
+        <td>
+            {% for issn in journal.issn %}
+            {{ issn.value }},
+            {% endfor %}
+        </td>
+        <td>
+            {{ journal.publisher }}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>

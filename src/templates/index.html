@@ -1,0 +1,31 @@
+{% extends "shared/_layout.html" %}
+{% block main_content %}
+
+<header>
+<h1>journal-rss</h1>
+<p class="subtitle">RSS feeds for any journal <3</p>
+</header>
+
+<div class="feed-container">
+    <div class="feed-search">
+        <input
+            class="form-control feed-search-input"
+            type="search"
+            name="search"
+            placeholder="Search for a journal..."
+            hx-post="/search"
+            hx-trigger="input changed delay:500ms, search"
+            hx-indicator=".search-indicator"
+            hx-target="#search-results"
+        >
+        <span class="htmx-indicator search-indicator">
+            <img src="/static/img/rings.svg"/>
+        </span>
+    </div>
+
+    <div class="feed-list" id="search-results">
+
+    </div>
+</div>
+
+{% endblock %}

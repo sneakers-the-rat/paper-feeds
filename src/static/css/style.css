@@ -1,0 +1,12 @@
+.container {
+    padding: 2em;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    padding: 1em;
+    margin: auto;
+    width: 100%;
+    text-align: center;
+}
