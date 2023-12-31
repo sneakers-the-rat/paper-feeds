@@ -3,7 +3,7 @@ from typing import Optional, TYPE_CHECKING, List
 from datetime import datetime
 from sqlmodel import SQLModel, Field, Relationship
 if TYPE_CHECKING:
-    from journal_rss.models import Feed
+    from journal_rss.models import Feed, Paper
 
 class JournalBase(SQLModel):
     title: str
@@ -13,7 +13,7 @@ class JournalBase(SQLModel):
 class Journal(JournalBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     issn: List['ISSN'] = Relationship(back_populates='journal')
-    # feed: Optional['Feed'] = Relationship(back_populates='journal')
+    papers: List['Paper'] = Relationship(back_populates='journal')
 
 
 class JournalCreate(JournalBase):
