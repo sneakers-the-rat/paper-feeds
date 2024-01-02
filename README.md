@@ -11,6 +11,25 @@ collecting metadata from crossref. Dependencies are kept minimal, as
 is deployment - No webpack, no complex build, no postgres,
 just pip install and press play :).
 
+# progress
+
+API:
+- [x] Query Crossref for journal
+- [x] Write journal metadata to db
+- [x] Paginate papers by journal
+- [x] Store papers in db
+- [ ] Create RSS feed from papers by issn
+- [ ] Cache RSS feeds
+- [ ] Scheduled update of feed metadata
+
+Frontend
+- [x] Search for journal
+- [x] Display list of journals
+- [ ] Pages for each journal
+- [ ] Create new feed button
+- [ ] Copy feed link
+- [ ] Export feeds
+
 # Credits
 
 - https://github.com/marty331/fasthtmx/
