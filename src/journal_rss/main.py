@@ -11,3 +11,5 @@ def start():
         reload=config.reload
     )
 
+start()
+
