@@ -1,0 +1,1 @@
+SCIHUB_URL = 'https://sci-hub.se/'

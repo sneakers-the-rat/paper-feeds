@@ -23,12 +23,14 @@ class PaperBase(SQLModel):
     edition_number: Optional[str] = None
     issue: Optional[str] = None
     volume: Optional[str] = None
+    page: Optional[str] = None
 
     # timestamps
     created: datetime
     indexed: datetime
-    posted: datetime
+    posted: Optional[datetime] = None
     published: datetime
+    deposited: datetime
     issued: Optional[datetime] = None
     accepted: Optional[datetime] = None
     content_created: Optional[datetime] = None
@@ -37,14 +39,14 @@ class PaperBase(SQLModel):
     published_online: Optional[datetime] = None
 
     # "metadata"
-    group_title: str
-    reference_count: int
+    group_title: Optional[str] = None
+    reference_count: Optional[int] = None
+    references_count: Optional[int] = None
     subject: Optional[str] = None
 
     # Links
-    link: Optional[str] = None
+    #link: Optional[str] = None
     url: Optional[str] = None
-    page: Optional[str] = None
     source: Optional[str] = None
 
     ## Additional props not in crossref
@@ -57,7 +59,7 @@ class PaperBase(SQLModel):
 class Paper(PaperBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     doi: str = Field(index=True, unique=True )
-    journal: Journal = Relationship(back_populates='papers')
+    journal: 'Journal' = Relationship(back_populates='papers')
     journal_id: Optional[int] = Field(default=None, foreign_key='journal.id')
 
     # TODO: handle updates
