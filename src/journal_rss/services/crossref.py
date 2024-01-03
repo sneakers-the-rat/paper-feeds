@@ -1,3 +1,4 @@
+import json
 import pdb
 from typing import Optional, List, Generator
 from datetime import datetime
@@ -101,7 +102,7 @@ def fetch_paper_page(
         rows: int = 100,
         offset: int = 0,
         since_date: Optional[datetime] = None
-    ) -> list[PaperCreate]:
+    ) -> tuple[list[PaperCreate], int]:
     # TODO: Select only fields in the model
     params = {
         'sort': 'published',
@@ -118,9 +119,11 @@ def fetch_paper_page(
     )
     return _clean_paper_page(res.json())
 
-def _clean_paper_page(res: dict) -> list[PaperCreate]:
+
+def _clean_paper_page(res: dict) -> tuple[list[PaperCreate], int]:
     """Making a separate function in case we need to do some filtering here"""
-    return [PaperCreate.from_crossref(item) for item in res['message']['items']]
+    return [PaperCreate.from_crossref(item) for item in res['message']['items']], res['message']['total-results']
+
 
 def store_papers(papers: list[PaperCreate], issn: str) -> list[Paper]:
     engine = get_engine()
@@ -159,14 +162,14 @@ def fetch_papers(issn: str, limit: int = 1000, rows=100) -> Generator[list[Paper
     # then return the completed sql models
 
     # TODO: Only get papers since the last time we updated
-    got_papers = fetch_paper_page(issn, rows)
+    got_papers, total_papers = fetch_paper_page(issn, rows)
     stored_papers = store_papers(got_papers, issn)
     yield stored_papers
 
     n_papers = len(got_papers)
-    while n_papers < limit:
+    while n_papers < limit and n_papers < total_papers:
         get_rows = min(limit-n_papers, rows)
-        got_papers = fetch_paper_page(issn, get_rows, n_papers)
+        got_papers, _ = fetch_paper_page(issn, get_rows, n_papers)
         stored_papers = store_papers(got_papers, issn)
         n_papers += len(got_papers)
         yield stored_papers
