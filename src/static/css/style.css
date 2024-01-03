@@ -1,20 +1,23 @@
+@import 'header.css';
+@import 'footer.css';
+@import 'search.css';
+@import 'tables.css';
+
 .container {
     padding: 2em;
+    width: 80%;
+    margin: 0 auto; /* Center the DIV horizontally */
 }
 
-footer {
-    position: fixed;
-    bottom: 0;
-    padding: 1em;
-    margin: auto;
-    width: 100%;
-    text-align: center;
+.body{        
+    padding-top: 60px;
+    padding-bottom: 40px;
 }
 
-.search-indicator {
-    height: 1em;
-    position: relative;
-    top: -10px;
-    display: inline-block;
-    vertical-align: top;
+.box {
+    border: 1px solid gray;
+    border-radius: 3px;
+    background: white;
+    background-repeat: repeat-y;
+    padding-top: 20px;
 }

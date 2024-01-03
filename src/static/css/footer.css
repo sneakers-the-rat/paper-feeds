@@ -1,0 +1,8 @@
+.footer_section {
+    /* position: fixed; */
+    bottom: 0;
+    padding: 10px;
+    text-align: center;
+    background-image: linear-gradient(to right, rgb(0, 62, 124) , rgb(0, 105, 211));
+    color: white;
+}
