@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 class JournalBase(SQLModel):
     title: str
     publisher: str
+    recent_paper_count: int
     feed: bool = False
     feed_created: Optional[datetime] = None
 
@@ -15,7 +16,6 @@ class Journal(JournalBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     issn: List['ISSN'] = Relationship(back_populates='journal')
     papers: List['Paper'] = Relationship(back_populates='journal')
-
 
 class JournalCreate(JournalBase):
     issn: list['ISSNCreate']
@@ -31,10 +31,12 @@ class JournalCreate(JournalBase):
         else:
             issns = res['issn-type']
 
+
         return JournalCreate(
             title=res['title'],
             publisher=res['publisher'],
-            issn = issns
+            issn = issns,
+            recent_paper_count = res['counts']['current-dois']
         )
 
 
