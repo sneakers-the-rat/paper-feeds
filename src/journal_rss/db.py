@@ -43,5 +43,4 @@ def create_tables(
     if config is None:
         config = Config()
 
-
     SQLModel.metadata.create_all(engine)

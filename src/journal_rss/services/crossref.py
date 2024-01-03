@@ -4,11 +4,11 @@ from datetime import datetime
 
 import requests
 from sqlmodel import Session, select
+from sqlalchemy.orm import selectinload
 
 from journal_rss import Config
-from journal_rss.models.journal import JournalCreate, Journal, ISSN
+from journal_rss.models.journal import JournalCreate, Journal, JournalRead, ISSN
 from journal_rss.models.paper import PaperCreate, Paper
-from journal_rss.const import SCIHUB_URL
 from journal_rss.db import get_engine
 
 
@@ -33,6 +33,10 @@ def crossref_get(
         headers=headers
     )
 
+# --------------------------------------------------
+# Journals
+# --------------------------------------------------
+
 def journal_search(query:str):
 
     req = crossref_get(
@@ -50,106 +54,46 @@ def _clean_journal_result(res: dict) -> list[JournalCreate]:
             journals.append(JournalCreate.from_crossref(j))
     return journals
 
-def _simplify_author(author) -> str:
-    """
-    'author': [{'affiliation': [],
-         'family': 'FirstName',
-         'given': 'LastName',
-         'sequence': 'first'}],
-    """
-    names = []
-    for name in author:
-        if name.get('name', None):
-            names.append(name.get('name'))
-            continue
+def store_journal(results: list[JournalCreate]) -> list[JournalRead]:
+    engine = get_engine()
+    journals = []
+    with Session(engine, expire_on_commit=False) as session:
+        for r in results:
+            statement = select(ISSN).where(ISSN.value == r.issn[0].value)
+            existing_issn = session.exec(statement).first()
 
-        # don't use get bc want to fail to find out what possible values are
-        if name['sequence'] in ('first', 'additional'):
-            name_parts = []
-            if name.get('given', None):
-                name_parts.append(name['given'])
-            if name.get('family', None):
-                name_parts.append(name['family'])
+            if existing_issn is None:
+                # create new
+                db_journal = Journal.model_validate(r.model_dump())
+                for issn in r.issn:
+                    db_journal.issn.append(ISSN(**issn.model_dump()))
+                session.add(db_journal)
+                # flush here because we sometimes get duplicates in the results
+                # and need to catch them on the next check
+                # we'll do perf later lmao
+                session.commit()
 
-            names.append(' '.join(name_parts))
-        else:
-            raise ValueError(f'unhandled name sequence {name["sequence"]}')
+            journals.append(load_journal(r.issn[0].value))
 
-    return ', '.join(names)
-
-def _simplify_datetime(date: dict) -> Optional[datetime]:
-    """
-    date = {
-        'date-parts': [[2023, 12, 21]],
-        'date-time': '2023-12-21T00:07:03Z',
-        'timestamp': 1703117223000},
-    }
-
-    :param date:
-    :return:
-    """
-    if date is None:
-        return None
-
-    if date.get('timestamp', None):
-        timestamp = float(date.get('timestamp'))
-        if timestamp > 1_000_000_000_000:
-            timestamp = timestamp / 1000
-        return datetime.fromtimestamp(timestamp)
-    elif date.get('date-time', None):
-        return datetime.fromisoformat(date.get('date-time'))
-    elif date.get('date-parts', None):
-        parts = date.get('date-parts')
-        if isinstance(parts[0], list):
-            parts = parts[0]
-        if len(parts) == 2:
-            # add the first day of the month
-            parts.append(1)
-        return datetime(*parts)
-    else:
-        raise ValueError(f"Cant handle date: {date}")
-
-def _unwrap_list(input: list | str, sep=', ') -> Optional[str]:
-    if isinstance(input, str):
-        return input
-    elif input is None:
-        return None
-    else:
-        return sep.join(input)
+    return journals
 
 
-def _clean_paper_page(res:dict) -> list[PaperCreate]:
-    items = res['message']['items']
-    papers = []
-    for item in items:
-        # TODO: Make this a fieldvalidator that converts names and applies functions
-        papers.append(PaperCreate(
-            doi = item['DOI'],
-            url = item['URL'],
-            author=_simplify_author(item['author']),
-            created = _simplify_datetime(item['created']),
-            deposited = _simplify_datetime(item['deposited']),
-            edition_number= item.get('edition-number', None),
-            indexed = _simplify_datetime(item['indexed']),
-            issue = item.get('issue', None),
-            issued = _simplify_datetime(item.get('issued', None)),
-            page = item.get('page', None),
-            posted = _simplify_datetime(item.get('posted', None)),
-            published = _simplify_datetime(item.get('published', None)),
-            published_print = _simplify_datetime(item.get('published-print', None)),
-            published_online = _simplify_datetime(item.get('published-online', None)),
-            publisher = item['publisher'],
-            reference_count= item.get('reference-count', None),
-            references_count = item.get('references-count', None),
-            short_title = item.get('short-title', None),
-            source = item.get('source', None),
-            subject = ', '.join(item.get('subject', [''])),
-            title = _unwrap_list(item['title']),
-            type = item['type'],
-            volume = item.get('volume', None),
-            scihub = SCIHUB_URL + item['DOI']
-        ))
-    return papers
+def load_journal(issn: str) -> JournalRead:
+    engine = get_engine()
+    with Session(engine) as session:
+        read_statement = select(Journal
+            ).options(selectinload(Journal.issn)
+            ).join(ISSN
+            ).where(ISSN.value == issn)
+        db_journal = session.exec(read_statement).first()
+        journal = JournalRead.model_validate(db_journal)
+    return journal
+
+
+# --------------------------------------------------
+# Papers
+# --------------------------------------------------
+
 
 def fetch_paper_page(
         issn:str,
@@ -172,6 +116,10 @@ def fetch_paper_page(
         params = params
     )
     return _clean_paper_page(res.json())
+
+def _clean_paper_page(res: dict) -> list[PaperCreate]:
+    """Making a separate function in case we need to do some filtering here"""
+    return [PaperCreate.from_crossref(item) for item in res['message']['items']]
 
 def store_papers(papers: list[PaperCreate], issn: str) -> list[Paper]:
     engine = get_engine()

@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 class JournalBase(SQLModel):
     title: str
     publisher: str
+    feed: bool = False
     feed_created: Optional[datetime] = None
 
 class Journal(JournalBase, table=True):

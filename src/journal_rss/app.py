@@ -42,27 +42,8 @@ async def search(request: Request, search: Annotated[str, Form()]):
     """
     Search for a journal using the crossref API
     """
-    print(search)
     results = crossref.journal_search(search)
-
-
-    with Session(engine) as session:
-        for r in results:
-            statement = select(models.ISSN).where(models.ISSN.value == r.issn[0].value)
-            existing_issn = session.exec(statement).first()
-
-            if existing_issn is not None:
-                continue
-
-
-            db_journal = models.Journal.model_validate(r.model_dump())
-            for issn in r.issn:
-                db_journal.issn.append(models.ISSN(**issn.model_dump()))
-            session.add(db_journal)
-            # flush here because we sometimes get duplicates in the results
-            # and need to catch them on the next check
-            # we'll do perf later lmao
-            session.commit()
+    results = crossref.store_journal(results)
 
     return templates.TemplateResponse(
         'partials/feed-list.html',

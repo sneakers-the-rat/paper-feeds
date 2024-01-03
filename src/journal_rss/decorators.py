@@ -26,8 +26,9 @@ def singleton(func: OriginalFunc) -> OriginalFunc:
     instances = {}
 
     def wrapper(*args: Param.args, **kwargs: Param.kwargs) -> ReturnType:
-        if func not in instances:
-            instances[func] = func(*args, **kwargs)
-        return instances[func]
+        if not hasattr(wrapper, '_instance'):
+            res = func(*args, **kwargs)
+            wrapper._instance = res
+        return wrapper._instance
 
     return wrapper
