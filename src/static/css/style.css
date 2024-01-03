@@ -10,3 +10,11 @@ footer {
     width: 100%;
     text-align: center;
 }
+
+.search-indicator {
+    height: 1em;
+    position: relative;
+    top: -10px;
+    display: inline-block;
+    vertical-align: top;
+}
