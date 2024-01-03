@@ -10,6 +10,7 @@ from journal_rss import Config
 from journal_rss.models.journal import JournalCreate, Journal, JournalRead, ISSN
 from journal_rss.models.paper import PaperCreate, Paper
 from journal_rss.db import get_engine
+from journal_rss import init_logger
 
 
 CROSSREF_API_URL = 'https://api.crossref.org/'
@@ -152,11 +153,6 @@ def store_papers(papers: list[PaperCreate], issn: str) -> list[Paper]:
 
     return ret
 
-
-
-
-
-
 def fetch_papers(issn: str, limit: int = 1000, rows=100) -> Generator[list[Paper],None, None]:
     # get the most recent paper to subset paging
     # then get pages and write them as we get the pages
@@ -172,6 +168,26 @@ def fetch_papers(issn: str, limit: int = 1000, rows=100) -> Generator[list[Paper
         get_rows = min(limit-n_papers, rows)
         got_papers = fetch_paper_page(issn, get_rows, n_papers)
         stored_papers = store_papers(got_papers, issn)
+        n_papers += len(got_papers)
         yield stored_papers
+
+def populate_papers(issn: str, limit: int = 1000, rows=100):
+    """
+    Background task for :func:`.fetch_papers`
+    """
+    logger = init_logger()
+    logger.debug('fetching papers for ISSN %s', issn)
+    fetcher = fetch_papers(issn, limit, rows)
+    fetched = 0
+
+    while True:
+        try:
+            papers = next(fetcher)
+            fetched += len(papers)
+            logger.debug('fetched %d papers', fetched)
+        except StopIteration:
+            break
+
+    logger.debug('completed paper fetch for %s', issn)
 
 

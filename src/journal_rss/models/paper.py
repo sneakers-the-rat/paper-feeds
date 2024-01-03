@@ -102,7 +102,7 @@ class PaperCreate(PaperBase):
             short_title=res.get('short-title', None),
             source=res.get('source', None),
             subject=', '.join(res.get('subject', [''])),
-            title=_unwrap_list(res['title']),
+            title=_unwrap_list(res.get('title', [])),
             type=res['type'],
             volume=res.get('volume', None),
             scihub=SCIHUB_URL + res['DOI']
@@ -162,6 +162,11 @@ def _simplify_datetime(date: dict) -> Optional[datetime]:
         parts = date.get('date-parts')
         if isinstance(parts[0], list):
             parts = parts[0]
+
+        if len(parts) == 1:
+            # add the first month of the year
+            parts.append(1)
+
         if len(parts) == 2:
             # add the first day of the month
             parts.append(1)

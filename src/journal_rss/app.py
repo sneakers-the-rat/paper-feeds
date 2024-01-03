@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Annotated
 from datetime import datetime
 
-from fastapi import Depends, FastAPI, Request, Form
+from fastapi import Depends, FastAPI, Request, Form, BackgroundTasks
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -54,7 +54,11 @@ async def search(request: Request, search: Annotated[str, Form()]):
         })
 
 @app.post('/journals/{issn}/feed')
-async def make_feed(feed_id: Annotated[str, Form()], request: Request):
+async def make_feed(
+        feed_id: Annotated[str, Form()],
+        request: Request,
+        background: BackgroundTasks
+):
     """
     Enable the "feed" attribute for the given journal and trigger an initial population
 
@@ -72,6 +76,9 @@ async def make_feed(feed_id: Annotated[str, Form()], request: Request):
         journal.feed_created = datetime.utcnow()
         session.add(journal)
         session.commit()
+
+    # start populating the feed
+    background.add_task(crossref.populate_papers, issn=feed_id)
 
     return templates.TemplateResponse(
         'partials/rss-button.html',
