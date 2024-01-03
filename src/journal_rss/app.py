@@ -87,8 +87,8 @@ async def make_feed(
     return templates.TemplateResponse(
         'partials/rss-button.html',
         {
-            'feed-type': 'journals',
-            'feed-id': feed_id,
+            'feed_type': 'journals',
+            'feed_id': feed_id,
             'request': request,
         })
 

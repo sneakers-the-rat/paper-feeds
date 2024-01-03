@@ -4,7 +4,7 @@
     <thead>
     <tr>
       <th>Name</th>
-      <th>ISSN</th>
+      <th>Recent paper count</th>
       <th>Publisher</th>
       <th>Feed</th>
     </tr>
@@ -13,11 +13,7 @@
     {% for journal in journals %}
     <tr>
         <td><a href="/journals/{{ journal.issn[0].value }}">{{ journal.title }}</a></td>
-        <td>
-            {% for issn in journal.issn %}
-            {{ issn.value }},
-            {% endfor %}
-        </td>
+        <td>{{ journal.recent_paper_count }}</td>
         <td>
             {{ journal.publisher }}
         </td>
