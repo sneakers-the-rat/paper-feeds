@@ -3,20 +3,15 @@
 <table class="table">
     <thead>
     <tr>
+      <th>Feed</th>
       <th>Name</th>
       <th>Recent paper count</th>
       <th>Publisher</th>
-      <th>Feed</th>
     </tr>
     </thead>
     <tbody>
     {% for journal in journals %}
     <tr>
-        <td><a href="/journals/{{ journal.issn[0].value }}">{{ journal.title }}</a></td>
-        <td>{{ journal.recent_paper_count }}</td>
-        <td>
-            {{ journal.publisher }}
-        </td>
         <td>
             {% if journal.feed %}
                 {% with feed_type="journals", feed_id=journal.issn[0].value %}
@@ -25,6 +20,11 @@
             {% else %}
                 {{ make_feed_button("journals", journal.issn[0].value) }}
             {% endif %}
+        </td>
+        <td><a href="/journals/{{ journal.issn[0].value }}">{{ journal.title }}</a></td>
+        <td>{{ journal.recent_paper_count }}</td>
+        <td>
+            {{ journal.publisher }}
         </td>
     </tr>
     {% endfor %}
