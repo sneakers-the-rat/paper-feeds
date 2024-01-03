@@ -22,6 +22,7 @@ class Config(BaseSettings):
     Crossref wants you to give an email address when you use
     their API! https://github.com/CrossRef/rest-api-doc#good-manners--more-reliable-service
     """
+    public_url: str = "http://localhost"
 
 
     @property

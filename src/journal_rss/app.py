@@ -7,6 +7,7 @@ from fastapi import Depends, FastAPI, Request, Form, BackgroundTasks
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+
 from sqlmodel import select
 
 # from sqlalchemy.orm import Session
@@ -16,7 +17,10 @@ from journal_rss.config import Config
 from journal_rss.db import create_tables, get_engine, get_session
 from journal_rss.services import crossref
 from journal_rss.models import api
+from journal_rss.models.rss import PaperRSSFeed
 from journal_rss import models
+
+from fastapi_rss import RSSResponse
 
 
 
@@ -88,6 +92,10 @@ async def make_feed(
             'request': request,
         })
 
+@app.get('/journals/{issn}/rss')
+async def journal_rss(issn: str) -> RSSResponse:
+    feed = PaperRSSFeed.from_issn(issn)
+    return RSSResponse(feed)
 
 
 

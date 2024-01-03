@@ -18,6 +18,7 @@ API:
 - [x] Write journal metadata to db
 - [x] Paginate papers by journal
 - [x] Store papers in db
+- [x] Populate papers when feed created
 - [ ] Create RSS feed from papers by issn
 - [ ] Cache RSS feeds
 - [ ] Scheduled update of feed metadata
@@ -26,7 +27,7 @@ Frontend
 - [x] Search for journal
 - [x] Display list of journals
 - [ ] Pages for each journal
-- [ ] Create new feed button
+- [x] Create new feed button
 - [ ] Copy feed link
 - [ ] Export feeds
 
