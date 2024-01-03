@@ -1,6 +1,7 @@
 import pdb
 from pathlib import Path
 from typing import Annotated
+from datetime import datetime
 
 from fastapi import Depends, FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -51,4 +52,36 @@ async def search(request: Request, search: Annotated[str, Form()]):
             'request': request,
             'journals': results
         })
+
+@app.post('/journals/{issn}/feed')
+async def make_feed(feed_id: Annotated[str, Form()], request: Request):
+    """
+    Enable the "feed" attribute for the given journal and trigger an initial population
+
+    Don't expose the full journal model to CRUD, the only field we want to be able to update
+    is `feed`, and the only thing we want to do to it is set it to ``True``
+    """
+    with Session(engine) as session:
+        statement = select(models.Journal).join(models.ISSN).where(models.ISSN.value == feed_id)
+        journal = session.exec(statement).one()
+        if journal is None:
+            # TODO: Handle creating journal entries from here
+            return
+
+        journal.feed = True
+        journal.feed_created = datetime.utcnow()
+        session.add(journal)
+        session.commit()
+
+    return templates.TemplateResponse(
+        'partials/rss-button.html',
+        {
+            'feed-type': 'journals',
+            'feed-id': feed_id,
+            'request': request,
+        })
+
+
+
+
 

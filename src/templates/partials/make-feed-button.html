@@ -1,0 +1,18 @@
+{% macro make_feed_button(feed_type, feed_id) -%}
+<span class="make-feed">
+    <button
+        id="make-feed-{{ feed_id }}-button"
+        class="form-control make-feed-button"
+        hx-post="/{{ feed_type }}/{{ feed_id }}/feed"
+        hx-trigger="click"
+        hx-indicator="#make-feed-{{ feed_id }}-indicator"
+        hx-target="#make-feed-{{ feed_id }}-button"
+        hx-vals='{"feed_id": "{{ feed_id }}" }'
+    >
+        +
+    </button>
+    <span class="htmx-indicator search-indicator" id="make-feed-{{ feed_id }}-indicator">
+        <img src="/static/img/rings.svg"/>
+    </span>
+</span>
+{%- endmacro %}

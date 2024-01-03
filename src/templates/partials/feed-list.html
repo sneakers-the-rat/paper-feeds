@@ -1,3 +1,5 @@
+{% from 'partials/make-feed-button.html' import make_feed_button %}
+
 <table class="table">
     <thead>
     <tr>
@@ -18,6 +20,15 @@
         </td>
         <td>
             {{ journal.publisher }}
+        </td>
+        <td>
+            {% if journal.feed %}
+                {% with feed_type="journals", feed_id=journal.issn[0].value %}
+                {% include 'partials/rss-button.html' %}
+                {% endwith %}
+            {% else %}
+                {{ make_feed_button("journals", journal.issn[0].value) }}
+            {% endif %}
         </td>
     </tr>
     {% endfor %}
