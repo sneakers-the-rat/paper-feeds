@@ -75,7 +75,7 @@ def ensure_alembic_version(engine):
     # Handle database migrations and version stamping!
     alembic_config = get_alembic_config()
 
-    command.ensure_version(alembic_config, sql=True)
+    command.ensure_version(alembic_config)
     version = alembic_version(engine)
 
     # Check to see if we are up to date
