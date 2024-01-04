@@ -4,6 +4,8 @@ from pathlib import Path
 
 import requests_cache
 
+from journal_rss.db import get_alembic_config
+
 def pytest_addoption(parser):
     parser.addoption(
         '--persist-http-cache',
@@ -39,3 +41,7 @@ def patch_requests_cache(pytestconfig):
 
 # import all fixtures here after enabling cache
 from .fixtures import *
+
+@pytest.fixture
+def alembic_config():
+    return get_alembic_config()

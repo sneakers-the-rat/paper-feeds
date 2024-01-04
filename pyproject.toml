@@ -1,12 +1,16 @@
 [tool.poetry]
 name = "journal-rss"
-version = "0.1.0"
+version = "0.0.2"
 description = "A FastAPI web server for creating RSS feeds for scholarly journals with the magic of adversarial interoperability"
 authors = ["sneakers-the-rat <JLSaunders987@gmail.com>"]
 license = "GPL-3.0"
 readme = "README.md"
 packages = [
     { include = "journal_rss", from="src" }
+]
+include = [
+    "src/static/*",
+    "src/templates/*"
 ]
 
 [tool.poetry.dependencies]
@@ -19,13 +23,15 @@ jinja2 = "^3.1.2"
 requests = "^2.31.0"
 python-multipart = "^0.0.6"
 fastapi-rss = "^0.2.0"
+alembic = "^1.13.1"
 pytest = {version = "^7.4.4", optional = true}
 requests-cache = {version = "^1.1.1", optional = true}
 coveralls = {version = "^3.3.1", optional = true}
 pytest-cov = {version = "^4.1.0", optional = true}
+pytest-alembic = {version = "^0.10.7", optional = true}
 
 [tool.poetry.extras]
-tests = ['pytest', 'requests-cache', 'pytest-cov', 'coveralls']
+tests = ['pytest', 'requests-cache', 'pytest-cov', 'coveralls', 'pytest-alembic']
 
 [tool.poetry.scripts]
 start = "journal_rss.main:start"

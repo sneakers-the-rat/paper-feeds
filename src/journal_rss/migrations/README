@@ -1,0 +1,8 @@
+Generic single-database configuration.
+
+See https://github.com/tiangolo/full-stack-fastapi-postgresql/blob/d91ed067a83953dca20783c17cd69394e62726b4/src/backend/app/alembic/env.py
+
+This is here instead of the project root because poetry refuses to bee able to package
+non-python files from different places:
+- https://github.com/Qonfused/OCE-Build/issues/12
+- https://github.com/python-poetry/poetry/issues/890
