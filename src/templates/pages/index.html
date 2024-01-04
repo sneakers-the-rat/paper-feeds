@@ -1,0 +1,20 @@
+{% extends "shared/default.html" %}
+{% block content %}
+<!-- Place page content within "content" block -->
+    <h2>1. Browse journals</h2>
+    <div class="box">
+        {% include "includes/section-search.html" %}
+    </div>
+
+    <h2>2. View and customise feeds</h2>
+    <div class="container">
+        <!-- Table for viewing selections -->
+    </div>
+    
+    <h2>3. Download feeds</h2>
+    <div class="container">
+        <center>
+            {% include "partials/test-button.html" %}
+        </center>
+    </div>
+{% endblock %}

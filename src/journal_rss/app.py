@@ -40,7 +40,7 @@ def on_startup():
 
 @app.get('/', response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse('shared/index.html', {"request": request})
+    return templates.TemplateResponse('pages/index.html', {"request": request})
 
 @app.post('/search')
 async def search(request: Request, search: Annotated[str, Form()]):
