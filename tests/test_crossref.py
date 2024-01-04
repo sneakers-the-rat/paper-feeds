@@ -36,14 +36,19 @@ def test_search_journal(query, issn, memory_db):
 
 
 @pytest.mark.parametrize(
-    ('issn'),
+    ('issn,kwargs'),
     (
-        '0896-6273',  # Neuron
+        ['0896-6273', {}],  # Neuron
+        ['1674-9251', {'rows':1, 'offset': 566, 'sort': 'published'}]   # Journal that returns itself as a work - https://github.com/sneakers-the-rat/journal-rss/issues/16
     )
 )
-def test_fetch_paper_page(issn):
+def test_fetch_paper_page(issn, kwargs):
+    """
+    Tests issues:
+    - https://github.com/sneakers-the-rat/journal-rss/issues/16
+    """
     # the models validating is the test passing lol
-    papers = fetch_paper_page(issn)
+    papers = fetch_paper_page(issn, **kwargs)
 
 
 @pytest.mark.parametrize(

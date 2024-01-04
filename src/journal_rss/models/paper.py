@@ -1,14 +1,13 @@
-import sys
-import typing
 from typing import Optional, Union, Tuple, List, Dict, Literal, TYPE_CHECKING
+from datetime import datetime
+
+from sqlmodel import SQLModel, Field, Relationship
 if TYPE_CHECKING:
     from journal_rss.models import Journal
 
 from journal_rss.const import SCIHUB_URL
 
 
-from datetime import datetime, date
-from sqlmodel import SQLModel, Field, Relationship
 
 class PaperBase(SQLModel):
     """https://api.crossref.org/swagger-ui/index.html#model-Work"""
