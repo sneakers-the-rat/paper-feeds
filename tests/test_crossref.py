@@ -46,15 +46,22 @@ def test_fetch_paper_page(issn):
     papers = fetch_paper_page(issn)
 
 
-@pytest.mark.timeout(10)
+
 @pytest.mark.parametrize(
-    ('issn'),
+    ('issn,limit'),
     (
-        '0896-6273',  # Neuron
-        '2666-0539'
+            ('0896-6273', 200),  # Neuron
     )
 )
-def test_fetch_papers(issn):
+def test_fetch_papers(issn, limit):
     # the models validating is the test passing for now
-    for papers in fetch_papers(issn, limit=200):
+    all_papers = []
+    for papers in fetch_papers(issn, limit=limit):
+        all_papers.extend(papers)
+    assert len(all_papers) == limit
+
+@pytest.mark.timeout(10)
+def test_fetch_less_than_limit():
+    """Fetch less than the limit without doing an infinite loop about it"""
+    for papers in fetch_papers('2666-0539', limit=1000):
         pass

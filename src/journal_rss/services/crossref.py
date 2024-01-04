@@ -164,7 +164,7 @@ def fetch_papers(issn: str, limit: int = 1000, rows=100) -> Generator[list[Paper
     yield stored_papers
 
     n_papers = len(got_papers)
-    while n_papers < limit:
+    while n_papers < limit and len(got_papers) == rows:
         get_rows = min(limit-n_papers, rows)
         got_papers = fetch_paper_page(issn, get_rows, n_papers)
         stored_papers = store_papers(got_papers, issn)
