@@ -1,0 +1,13 @@
+/* ---------- Search ----------- */
+.search-indicator {
+    height: 1em;
+    position: relative;
+    top: -10px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.feed-search {
+    padding: 20px;
+}
+/* ------------- Search end ------------- */
