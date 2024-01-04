@@ -36,21 +36,20 @@ def test_search_journal(query, issn, memory_db):
 
 
 @pytest.mark.parametrize(
-    ('issn,kwargs'),
+    ('issn'),
     (
-        ['0896-6273', {}],  # Neuron
-        ['1674-9251', {'rows':1, 'filter': 'type:journal'}]   # Journal that returns itself as a work - https://github.com/sneakers-the-rat/journal-rss/issues/16
+        '0896-6273',  # Neuron
     )
 )
-def test_fetch_paper_page(issn, kwargs):
+def test_fetch_paper_page(issn):
+    # the models validating is the test passing lol
+    papers = fetch_paper_page(issn)
+
+def test_filter_non_papers():
     """
     Tests issues:
     - https://github.com/sneakers-the-rat/journal-rss/issues/16
     """
-    # the models validating is the test passing lol
-    papers = fetch_paper_page(issn, **kwargs)
-
-def test_filter_non_papers():
     # result known to be a `journal` type
     journal_item = fetch_paper_page('1674-9251', rows=1, filter='type:journal')
     assert len(journal_item) == 0
