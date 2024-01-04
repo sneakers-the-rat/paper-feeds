@@ -11,6 +11,10 @@ def pytest_addoption(parser):
         help="Don't delete the requests_cache .sqlite file after completing tests"
     )
 
+# ----------------------------------------------------
+# Fixtures for customizing environment/test conditions
+# ----------------------------------------------------
+
 @pytest.fixture(scope="session", autouse=True)
 def patch_requests_cache(pytestconfig):
     """
@@ -32,3 +36,6 @@ def patch_requests_cache(pytestconfig):
     # delete cache file unless we have requested it to persist for inspection
     if not pytestconfig.getoption('--persist-http-cache'):
         cache_file.unlink(missing_ok=True)
+
+# import all fixtures here after enabling cache
+from .fixtures import *
