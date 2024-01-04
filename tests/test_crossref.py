@@ -39,7 +39,7 @@ def test_search_journal(query, issn, memory_db):
     ('issn,kwargs'),
     (
         ['0896-6273', {}],  # Neuron
-        ['1674-9251', {'rows':1, 'offset': 566, 'sort': 'published'}]   # Journal that returns itself as a work - https://github.com/sneakers-the-rat/journal-rss/issues/16
+        ['1674-9251', {'rows':1, 'filter': 'type:journal'}]   # Journal that returns itself as a work - https://github.com/sneakers-the-rat/journal-rss/issues/16
     )
 )
 def test_fetch_paper_page(issn, kwargs):

@@ -162,6 +162,10 @@ def _simplify_datetime(date: dict) -> Optional[datetime]:
         if isinstance(parts[0], list):
             parts = parts[0]
 
+        if parts[0] is None:
+            # eg. "issued" on http://api.crossref.org/journals/1674-9251/works?rows=1&offset=566&sort=published&order=desc
+            return None
+
         if len(parts) == 1:
             # add the first month of the year
             parts.append(1)
