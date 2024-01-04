@@ -50,6 +50,11 @@ def test_fetch_paper_page(issn, kwargs):
     # the models validating is the test passing lol
     papers = fetch_paper_page(issn, **kwargs)
 
+def test_filter_non_papers():
+    # result known to be a `journal` type
+    journal_item = fetch_paper_page('1674-9251', rows=1, filter='type:journal')
+    assert len(journal_item) == 0
+
 
 @pytest.mark.parametrize(
     ('issn'),

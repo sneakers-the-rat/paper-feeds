@@ -133,7 +133,7 @@ def fetch_paper_page(
 
 def _clean_paper_page(res: dict) -> list[PaperCreate]:
     """Making a separate function in case we need to do some filtering here"""
-    return [PaperCreate.from_crossref(item) for item in res['message']['items']]
+    return [PaperCreate.from_crossref(item) for item in res['message']['items'] if item.get('type', None) in PAPER_TYPES]
 
 def store_papers(papers: list[PaperCreate], issn: str) -> list[Paper]:
     engine = get_engine()
