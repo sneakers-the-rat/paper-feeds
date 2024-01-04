@@ -916,6 +916,20 @@ pytest = ">=4.6"
 testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtualenv"]
 
 [[package]]
+name = "pytest-timeout"
+version = "2.2.0"
+description = "pytest plugin to abort hanging tests"
+optional = true
+python-versions = ">=3.7"
+files = [
+    {file = "pytest-timeout-2.2.0.tar.gz", hash = "sha256:3b0b95dabf3cb50bac9ef5ca912fa0cfc286526af17afc806824df20c2f72c90"},
+    {file = "pytest_timeout-2.2.0-py3-none-any.whl", hash = "sha256:bde531e096466f49398a59f2dde76fa78429a09a12411466f88a07213e220de2"},
+]
+
+[package.dependencies]
+pytest = ">=5.0.0"
+
+[[package]]
 name = "python-dotenv"
 version = "1.0.0"
 description = "Read key-value pairs from a .env file and set them as environment variables"
@@ -1195,9 +1209,9 @@ h11 = ">=0.8"
 standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)", "pyyaml (>=5.1)", "uvloop (>=0.14.0,!=0.15.0,!=0.15.1)", "watchfiles (>=0.13)", "websockets (>=10.4)"]
 
 [extras]
-tests = ["coveralls", "pytest", "pytest-cov", "requests-cache"]
+tests = ["coveralls", "pytest", "pytest-alembic", "pytest-cov", "requests-cache"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "ac59797d906254c4b22edcbb7ec35015b1c8422007dcace33b238e9d85df5012"
+content-hash = "fe280edde9dee599854cb53cdc6279714d28a08382e678f3b64311acd4148dfd"

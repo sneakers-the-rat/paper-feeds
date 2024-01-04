@@ -46,14 +46,15 @@ def test_fetch_paper_page(issn):
     papers = fetch_paper_page(issn)
 
 
+@pytest.mark.timeout(10)
 @pytest.mark.parametrize(
     ('issn'),
     (
         '0896-6273',  # Neuron
+        '2666-0539'
     )
 )
 def test_fetch_papers(issn):
-    # the models validating is the test passing lol
-    # for papers in fetch_papers(issn):
-    #     pdb.set_trace()
-    pass
+    # the models validating is the test passing for now
+    for papers in fetch_papers(issn, limit=200):
+        pass
