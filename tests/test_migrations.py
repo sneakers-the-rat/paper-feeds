@@ -10,7 +10,7 @@ from alembic import command
 
 from .fixtures import memory_db, db_tables
 
-from journal_rss.db import alembic_version, get_alembic_config
+from paper_feeds.db import alembic_version, get_alembic_config
 
 from pytest_alembic.tests import (
     test_model_definitions_match_ddl,

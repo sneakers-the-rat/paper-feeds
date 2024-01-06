@@ -1,7 +1,7 @@
 import pytest
 from datetime import datetime, timezone
 
-from journal_rss.models.paper import _simplify_datetime
+from paper_feeds.models.paper import _simplify_datetime
 
 @pytest.mark.parametrize(
     'test,expected',
@@ -19,7 +19,7 @@ from journal_rss.models.paper import _simplify_datetime
         # truncated date parts
         ({'date-parts': [[2024,1]]}, datetime(2024,1,1, tzinfo=timezone.utc)),
         ({'date-parts': [[2024]]}, datetime(2024,1,1, tzinfo=timezone.utc)),
-        # https://github.com/sneakers-the-rat/journal-rss/issues/16
+        # https://github.com/sneakers-the-rat/paper-feeds/issues/16
         ({'date-parts': [[None]]}, None)
     ]
 )

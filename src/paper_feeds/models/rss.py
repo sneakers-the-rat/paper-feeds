@@ -10,10 +10,10 @@ from fastapi_rss import RSSFeed, Item
 from sqlmodel import Session, select
 from sqlalchemy import desc
 
-from journal_rss.models import Journal, ISSN, Paper
-from journal_rss.db import get_engine
-from journal_rss.services.crossref import load_journal
-from journal_rss import Config
+from paper_feeds.models import Journal, ISSN, Paper
+from paper_feeds.db import get_engine
+from paper_feeds.services.crossref import load_journal
+from paper_feeds import Config
 
 class PaperItem(Item):
     @classmethod

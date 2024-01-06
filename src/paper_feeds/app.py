@@ -13,12 +13,12 @@ from sqlmodel import select
 # from sqlalchemy.orm import Session
 from sqlmodel import Session
 
-from journal_rss.config import Config
-from journal_rss.db import create_tables, get_engine, get_session
-from journal_rss.services import crossref
-from journal_rss.models import api
-from journal_rss.models.rss import PaperRSSFeed
-from journal_rss import models
+from paper_feeds.config import Config
+from paper_feeds.db import create_tables, get_engine, get_session
+from paper_feeds.services import crossref
+from paper_feeds.models import api
+from paper_feeds.models.rss import PaperRSSFeed
+from paper_feeds import models
 
 from fastapi_rss import RSSResponse
 
@@ -93,7 +93,7 @@ async def make_feed(
         })
 
 @app.get('/journals/{issn}/rss')
-async def journal_rss(issn: str) -> RSSResponse:
+async def paper_feeds(issn: str) -> RSSResponse:
     feed = PaperRSSFeed.from_issn(issn)
     return RSSResponse(feed)
 

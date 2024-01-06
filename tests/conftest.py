@@ -4,7 +4,7 @@ from pathlib import Path
 
 import requests_cache
 
-from journal_rss.db import get_alembic_config
+from paper_feeds.db import get_alembic_config
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -25,7 +25,7 @@ def patch_requests_cache(pytestconfig):
 
     The cache should be destroyed and recreated each session
     """
-    cache_file = Path('./tests/journal-rss-tests.sqlite')
+    cache_file = Path('./tests/paper-feeds-tests.sqlite')
     requests_cache.install_cache(
         str(cache_file),
         backend='sqlite',

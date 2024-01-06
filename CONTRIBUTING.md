@@ -14,8 +14,8 @@ TODO. For now, just...
 Set up the repo:
 
 ```bash
-git clone https://github.com/sneakers-the-rat/journal-rss
-cd journal-rss
+git clone https://github.com/sneakers-the-rat/paper-feeds
+cd paper-feeds
 
 # make a new branch to work on!
 git branch -b my-new-branch dev
@@ -35,7 +35,7 @@ Otherwise...
 python -m venv ./venv
 source ./venv/bin/activate
 pip install -e '.[tests]'
-python -m journal_rss
+python -m paper_feeds
 ```
 
 ## Making Pull Requests
@@ -44,7 +44,7 @@ python -m journal_rss
 - Pull against the `dev` branch
 - Write tests for newly added code.
 - If you have changed any of the database models, write a database migration with [alembic](https://alembic.sqlalchemy.org/en/latest/tutorial.html)
-- Ensure tests pass! If you've installed the package with the `tests` extras (eg. `pip install journal-rss[tests]`),
+- Ensure tests pass! If you've installed the package with the `tests` extras (eg. `pip install paper-feeds[tests]`),
   then all you need to do is run `pytest` from the repository root
 
 ## Writing Migrations

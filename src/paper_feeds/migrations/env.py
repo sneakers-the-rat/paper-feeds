@@ -5,8 +5,8 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from journal_rss.models import SQLModel
-from journal_rss import Config
+from paper_feeds.models import SQLModel
+from paper_feeds import Config
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

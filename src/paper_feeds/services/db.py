@@ -1,5 +1,5 @@
-from journal_rss.db import get_session
-from journal_rss.models import Journal
+from paper_feeds.db import get_session
+from paper_feeds.models import Journal
 
 # def store_journals(journals: dict):
 #     """

@@ -1,4 +1,4 @@
-from journal_rss.decorators import singleton
+from paper_feeds.decorators import singleton
 from datetime import datetime
 from time import sleep
 

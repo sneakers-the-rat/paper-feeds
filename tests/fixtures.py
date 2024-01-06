@@ -3,9 +3,9 @@ import pytest
 from sqlmodel import create_engine, SQLModel
 from sqlalchemy import Engine
 
-from journal_rss.db import get_engine, create_tables
-from journal_rss import models
-from journal_rss.services.crossref import journal_search, store_journal, populate_papers
+from paper_feeds.db import get_engine, create_tables
+from paper_feeds import models
+from paper_feeds.services.crossref import journal_search, store_journal, populate_papers
 
 
 @pytest.fixture(autouse=True, scope='session')

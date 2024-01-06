@@ -3,9 +3,9 @@ from datetime import datetime, timezone
 
 from sqlmodel import SQLModel, Field, Relationship
 if TYPE_CHECKING:
-    from journal_rss.models import Journal
+    from paper_feeds.models import Journal
 
-from journal_rss.const import SCIHUB_URL
+from paper_feeds.const import SCIHUB_URL
 
 
 

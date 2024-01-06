@@ -8,11 +8,11 @@ from alembic.config import Config as AlembicConfig
 from alembic import command
 from alembic.util.exc import CommandError
 
-from journal_rss import Config
-from journal_rss.decorators import singleton
-from journal_rss.exceptions import DBMigrationError
+from paper_feeds import Config
+from paper_feeds.decorators import singleton
+from paper_feeds.exceptions import DBMigrationError
 # all models need to be imported when creating tables
-from journal_rss import models
+from paper_feeds import models
 
 if TYPE_CHECKING:
     from sqlalchemy.future.engine import Engine
@@ -88,11 +88,11 @@ def ensure_alembic_version(engine):
             command.check(alembic_config)
         except CommandError:
             # don't automatically migrate since it could be destructive
-            raise DBMigrationError('Database needs to be migrated! Run journal-rss migrate')
+            raise DBMigrationError('Database needs to be migrated! Run paper-feeds migrate')
 
 
 def get_alembic_config() -> AlembicConfig:
-    return AlembicConfig(str(importlib.resources.files('journal_rss') / 'migrations' / 'alembic.ini'))
+    return AlembicConfig(str(importlib.resources.files('paper_feeds') / 'migrations' / 'alembic.ini'))
 
 def alembic_version(engine: 'Engine') -> Optional[str]:
     """

@@ -3,7 +3,7 @@ from typing import Optional, TYPE_CHECKING, List
 from datetime import datetime
 from sqlmodel import SQLModel, Field, Relationship
 if TYPE_CHECKING:
-    from journal_rss.models import Feed, Paper
+    from paper_feeds.models import Feed, Paper
 
 class JournalBase(SQLModel):
     title: str

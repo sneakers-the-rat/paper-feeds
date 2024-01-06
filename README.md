@@ -1,7 +1,7 @@
-# journal-rss
+# paper-feeds
 
-![PyPI - Version](https://img.shields.io/pypi/v/journal-rss)
-[![Coverage Status](https://coveralls.io/repos/github/sneakers-the-rat/journal-rss/badge.svg)](https://coveralls.io/github/sneakers-the-rat/journal-rss)
+![PyPI - Version](https://img.shields.io/pypi/v/paper-feeds)
+[![Coverage Status](https://coveralls.io/repos/github/sneakers-the-rat/paper-feeds/badge.svg)](https://coveralls.io/github/sneakers-the-rat/paper-feeds)
 
 A FastAPI web server for creating RSS feeds for scholarly journals with the magic of adversarial interoperability
 
@@ -21,8 +21,8 @@ just pip install and press play :).
 After [creating and activating a virtual environment...](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment)
 
 ```bash
-pip install journal_rss
-python -m journal_rss
+pip install paper-feeds
+python -m paper_feeds
 # then open http://localhost:8000 in your browser
 ```
 

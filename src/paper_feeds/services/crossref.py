@@ -6,15 +6,15 @@ import requests
 from sqlmodel import Session, select
 from sqlalchemy.orm import selectinload
 
-from journal_rss import Config
-from journal_rss.models.journal import JournalCreate, Journal, JournalRead, ISSN
-from journal_rss.models.paper import PaperCreate, Paper
-from journal_rss.db import get_engine
-from journal_rss import init_logger
+from paper_feeds import Config
+from paper_feeds.models.journal import JournalCreate, Journal, JournalRead, ISSN
+from paper_feeds.models.paper import PaperCreate, Paper
+from paper_feeds.db import get_engine
+from paper_feeds import init_logger
 
 
 CROSSREF_API_URL = 'https://api.crossref.org/'
-USER_AGENT = 'journal-rss (https://github.com/sneakers-the-rat/journal-rss)'
+USER_AGENT = 'paper-feeds (https://github.com/sneakers-the-rat/paper-feeds)'
 PAPER_TYPES = (
     'journal-article', 'book', 'book-chapter', 'book-part', 'book-section',
     'edited-book', 'proceedings-article', 'reference-book', 'dissertation',

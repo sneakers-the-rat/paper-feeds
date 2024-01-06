@@ -3,7 +3,7 @@ from .fixtures import db_tables, memory_db
 
 import pytest
 
-from journal_rss.services.crossref import fetch_paper_page, fetch_papers, journal_search, store_journal
+from paper_feeds.services.crossref import fetch_paper_page, fetch_papers, journal_search, store_journal
 
 @pytest.mark.parametrize(
     'query,issn',
@@ -48,7 +48,7 @@ def test_fetch_paper_page(issn):
 def test_filter_non_papers():
     """
     Tests issues:
-    - https://github.com/sneakers-the-rat/journal-rss/issues/16
+    - https://github.com/sneakers-the-rat/paper-feeds/issues/16
     """
     # result known to be a `journal` type
     journal_item = fetch_paper_page('1674-9251', rows=1, filter='type:journal')

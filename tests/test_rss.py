@@ -1,6 +1,6 @@
 import pytest
 
-from journal_rss.models.rss import PaperRSSFeed
+from paper_feeds.models.rss import PaperRSSFeed
 from .fixtures import base_data
 
 @pytest.mark.parametrize(
