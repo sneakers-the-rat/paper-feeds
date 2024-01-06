@@ -3,6 +3,10 @@
 @import 'search.css';
 @import 'tables.css';
 
+:root {
+    --color-highlight: #f0f6ff;
+}
+
 .container {
     padding: 2em;
     width: 80%;

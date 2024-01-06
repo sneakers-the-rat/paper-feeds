@@ -1,0 +1,53 @@
+{% extends "shared/default.html" %}
+{% from 'partials/make-feed-button.html' import make_feed_button %}
+
+{% block content %}
+<!-- Place page content within "content" block -->
+    <h2 class="journal-title">{{ journal.title }}</h2>
+    <div class="journal-metadata">
+        <div class="metadata-item">
+            <span class="metadata-key">Publisher:</span>
+            <span class="metadata-value">{{ journal.publisher }}</span>
+        </div>
+        <div class="metadata-item">
+            <span class="metadata-key">Homepage:</span>
+            <span class="metadata-value">TODO add homepage to journal model</span>
+        </div>
+        <div class="metadata-item">
+            <span class="metadata-key">Recent Papers:</span>
+            <span class="metadata-value">{{ journal.recent_paper_count }}</span>
+        </div>
+        {% if journal.issn %}
+        <div class="metadata-item">
+            <span class="metadata-key">ISSN(s):</span>
+            {% for issn in journal.issn %}
+            <span class="metadata-value">{{ issn.value }} ({{ issn.type }})</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="metadata-item">
+            <span class="metadata-key">What else</span>
+            <span class="metadata-value">should go here?</span>
+        </div>
+    </div>
+
+    <div class="journal-feeds">
+        <div class="journal-feed-container">
+        <span class="journal-feed-type">RSS:</span>
+        {% if journal.feed %}
+            {% with feed_type="journals", feed_id=feed_id %}
+            {% include 'partials/rss-button.html' %}
+            {% endwith %}
+        {% else %}
+            {{ make_feed_button("journals", journal.issn[0].value) }}
+        {% endif %}
+        </div>
+    </div>
+
+    <div class="paper-list-container">
+        <h2>Papers:</h2>
+        {% with feed_type="journals", feed_id=feed_id %}
+        {% include "partials/paper-list-preload.html" %}
+        {% endwith %}
+    </div>
+{% endblock %}

@@ -1,0 +1,11 @@
+<div class="paper-list">
+    <div
+        hx-get="/{{ feed_type }}/{{ feed_id }}/papers"
+        hx-trigger="load"
+    >
+        <span class="htmx-indicator search-indicator" id="paper-list-{{ feed_type }}-{{ feed_id }}-indicator">
+            <span>Loading papers...</span>
+            <img src="/static/img/rings.svg"/>
+        </span>
+    </div>
+</div>

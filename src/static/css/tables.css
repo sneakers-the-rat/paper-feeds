@@ -25,3 +25,30 @@
   }
 
   /* ------------- Tables end ------------- */
+
+.paper-list summary, .paper-list details p {
+    padding: 1em;
+}
+
+.paper-list details {
+    border-radius: 3px;
+    border: 1px solid gray;
+    cursor: pointer;
+    display: inline-block;
+    margin-bottom: 0.2em;
+    width: 100%;
+
+    transition: 0.2s background ease-out;
+}
+
+.paper-list details:hover, .paper-list summary:focus {
+    background: var(--color-highlight);
+}
+
+.paper-list h3 {
+    display: inline;
+}
+
+.paper-list details::marker {
+    height: 100%;
+}

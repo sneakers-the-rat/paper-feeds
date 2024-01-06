@@ -3,20 +3,18 @@ from pathlib import Path
 from typing import Annotated
 from datetime import datetime
 
-from fastapi import Depends, FastAPI, Request, Form, BackgroundTasks
+from fastapi import Depends, FastAPI, Request, Form, BackgroundTasks, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from sqlmodel import select
-
-# from sqlalchemy.orm import Session
+from sqlmodel import select, desc
 from sqlmodel import Session
 
 from paper_feeds.config import Config
 from paper_feeds.db import create_tables, get_engine, get_session
 from paper_feeds.services import crossref
-from paper_feeds.models import api
+from paper_feeds.models.paper import PaperRead
 from paper_feeds.models.rss import PaperRSSFeed
 from paper_feeds import models
 
@@ -57,6 +55,23 @@ async def search(request: Request, search: Annotated[str, Form()]):
             'journals': results
         })
 
+@app.get('/journals/{issn}')
+async def journal_page(request: Request, issn:str):
+    journal = crossref.load_journal(issn)
+
+    # TODO: Trigger background task to update papers in journal here
+
+    return templates.TemplateResponse(
+        'pages/journal.html',
+        {
+            'request': request,
+            'feed_id': issn,
+            'journal': journal
+        }
+    )
+    pass
+
+
 @app.post('/journals/{issn}/feed')
 async def make_feed(
         feed_id: Annotated[str, Form()],
@@ -96,6 +111,45 @@ async def make_feed(
 async def paper_feeds(issn: str) -> RSSResponse:
     feed = PaperRSSFeed.from_issn(issn)
     return RSSResponse(feed)
+
+
+@app.get(
+    '/journals/{issn}/papers',
+    response_model=list[PaperRead],
+    responses= {
+        200: {
+            "description": "List of papers for given journal",
+            "content": {
+                "application/json": {},
+                "text/html": {}
+            }
+        }
+    },
+         )
+async def journal_papers(request: Request, issn: str, rows:int = Query(default=40, le=200), offset:int = 0):
+    engine = get_engine()
+    with Session(engine) as session:
+        # get journal
+        journal = crossref.load_journal(issn)
+        # get papers
+        paper_statement = select(models.Paper
+             ).join(models.Journal
+             ).where(models.Paper.journal_id == journal.id
+             ).order_by(desc(models.Paper.published)
+             ).offset(offset
+             ).limit(rows)
+        papers = session.exec(paper_statement).all()
+
+    if request.headers.get('content-type',False) == 'application/json':
+        return papers
+    else:
+        return templates.TemplateResponse(
+            'partials/paper-list.html',
+            {
+                'request': request,
+                'papers':papers
+            }
+        )
 
 
 
