@@ -1,4 +1,3 @@
-import pdb
 from typing import Optional, List, Generator
 from datetime import datetime
 
@@ -29,15 +28,32 @@ See http://api.crossref.org/types
 
 def crossref_get(
         endpoint: str,
-        params:dict,
-        contact: Optional[Config] = None
+        params: dict,
+        email: str = None
 ) -> requests.Response:
+    """
+    .. todo::
+
+        Document this
+
+    Args:
+        endpoint (str): Endpoint appended to :data:`.CROSSREF_API_URL`
+        params (dict): Query parameters
+        email (str): Email used to be `polite to crossref <https://github.com/CrossRef/rest-api-doc#good-manners--more-reliable-service>`_
+            If ``None`` , use ``crossref_email`` set in :class:`.Config`
+
+    Returns:
+        :class:`requests.Response`
+    """
     headers = {
         'User-Agent': USER_AGENT
     }
-    if contact:
+    if email is None:
+        email = Config().crossref_email
+
+    if email:
         params.update({
-            'mailto': contact
+            'mailto': email
         })
     return requests.get(
         CROSSREF_API_URL + endpoint,
