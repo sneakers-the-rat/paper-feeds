@@ -45,6 +45,15 @@ def test_fetch_paper_page(issn):
     # the models validating is the test passing lol
     papers = fetch_paper_page(issn)
 
+def test_filter_non_papers():
+    """
+    Tests issues:
+    - https://github.com/sneakers-the-rat/journal-rss/issues/16
+    """
+    # result known to be a `journal` type
+    journal_item = fetch_paper_page('1674-9251', rows=1, filter='type:journal')
+    assert len(journal_item) == 0
+
 
 
 @pytest.mark.parametrize(

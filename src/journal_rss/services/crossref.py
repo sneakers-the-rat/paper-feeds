@@ -15,6 +15,17 @@ from journal_rss import init_logger
 
 CROSSREF_API_URL = 'https://api.crossref.org/'
 USER_AGENT = 'journal-rss (https://github.com/sneakers-the-rat/journal-rss)'
+PAPER_TYPES = (
+    'journal-article', 'book', 'book-chapter', 'book-part', 'book-section',
+    'edited-book', 'proceedings-article', 'reference-book', 'dissertation',
+    'report'
+)
+"""
+Crossref types that we'll treat as a "paper"
+
+See http://api.crossref.org/types
+"""
+
 
 def crossref_get(
         endpoint: str,
@@ -100,14 +111,16 @@ def fetch_paper_page(
         issn:str,
         rows: int = 100,
         offset: int = 0,
-        since_date: Optional[datetime] = None
+        since_date: Optional[datetime] = None,
+        **kwargs
     ) -> list[PaperCreate]:
     # TODO: Select only fields in the model
     params = {
         'sort': 'published',
         'order': 'desc',
         'rows': rows,
-        'offset': offset
+        'offset': offset,
+        **kwargs
     }
     if since_date:
         params['from-pub-date'] = since_date.strftime('%y-%m-%d')
@@ -120,7 +133,7 @@ def fetch_paper_page(
 
 def _clean_paper_page(res: dict) -> list[PaperCreate]:
     """Making a separate function in case we need to do some filtering here"""
-    return [PaperCreate.from_crossref(item) for item in res['message']['items']]
+    return [PaperCreate.from_crossref(item) for item in res['message']['items'] if item.get('type', None) in PAPER_TYPES]
 
 def store_papers(papers: list[PaperCreate], issn: str) -> list[Paper]:
     engine = get_engine()
@@ -189,5 +202,3 @@ def populate_papers(issn: str, limit: int = 1000, rows=100):
             break
 
     logger.debug('completed paper fetch for %s', issn)
-
-

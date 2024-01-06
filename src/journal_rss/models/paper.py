@@ -1,14 +1,13 @@
-import sys
-import typing
 from typing import Optional, Union, Tuple, List, Dict, Literal, TYPE_CHECKING
+from datetime import datetime, timezone
+
+from sqlmodel import SQLModel, Field, Relationship
 if TYPE_CHECKING:
     from journal_rss.models import Journal
 
 from journal_rss.const import SCIHUB_URL
 
 
-from datetime import datetime, date
-from sqlmodel import SQLModel, Field, Relationship
 
 class PaperBase(SQLModel):
     """https://api.crossref.org/swagger-ui/index.html#model-Work"""
@@ -155,13 +154,17 @@ def _simplify_datetime(date: dict) -> Optional[datetime]:
         timestamp = float(date.get('timestamp'))
         if timestamp > 1_000_000_000_000:
             timestamp = timestamp / 1000
-        return datetime.fromtimestamp(timestamp)
+        return datetime.fromtimestamp(timestamp, tz=timezone.utc)
     elif date.get('date-time', None):
         return datetime.fromisoformat(date.get('date-time'))
     elif date.get('date-parts', None):
         parts = date.get('date-parts')
         if isinstance(parts[0], list):
             parts = parts[0]
+
+        if parts[0] is None:
+            # eg. "issued" on http://api.crossref.org/journals/1674-9251/works?rows=1&offset=566&sort=published&order=desc
+            return None
 
         if len(parts) == 1:
             # add the first month of the year
@@ -170,7 +173,7 @@ def _simplify_datetime(date: dict) -> Optional[datetime]:
         if len(parts) == 2:
             # add the first day of the month
             parts.append(1)
-        return datetime(*parts)
+        return datetime(*parts, tzinfo=timezone.utc)
     else:
         raise ValueError(f"Cant handle date: {date}")
 
