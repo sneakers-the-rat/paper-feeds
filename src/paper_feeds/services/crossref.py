@@ -29,7 +29,7 @@ See http://api.crossref.org/types
 def crossref_get(
         endpoint: str,
         params: dict,
-        email: str = None
+        email: Optional[str] = None
 ) -> requests.Response:
     """
     .. todo::
