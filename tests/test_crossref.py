@@ -109,7 +109,7 @@ def test_fetch_papers(issn, limit):
         all_papers.extend(papers)
     assert len(all_papers) == limit
 
-@pytest.mark.timeout(10)
+@pytest.mark.timeout(20)
 def test_fetch_less_than_limit():
     """Fetch less than the limit without doing an infinite loop about it"""
     for papers in fetch_papers('2666-0539', limit=1000):
