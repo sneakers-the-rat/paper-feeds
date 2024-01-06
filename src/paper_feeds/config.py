@@ -1,13 +1,23 @@
 from typing import Optional, Literal
 from pathlib import Path
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field, DirectoryPath, computed_field, field_validator, model_validator, FieldValidationInfo
+from importlib.metadata import version
+if version('pydantic').startswith('2'):
+    from pydantic_settings import BaseSettings, SettingsConfigDict
+else:
+    from pydantic import BaseSettings
 
 class Config(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file='.env',
-        env_file_encoding='utf-8',
-        env_prefix="jrss_")
+    if version('pydantic').startswith('2'):
+        model_config = SettingsConfigDict(
+            env_file='.env',
+            env_file_encoding='utf-8',
+            env_prefix="paperfeeds_")
+    else:
+        class Config:
+            env_prefix = 'paperfeeds_'
+            env_file_encoding='utf-8'
+            env_file='.env'
+
 
     db: Optional[Path] = Path('./db.sqlite')
     """
@@ -23,6 +33,11 @@ class Config(BaseSettings):
     their API! https://github.com/CrossRef/rest-api-doc#good-manners--more-reliable-service
     """
     public_url: str = "http://localhost"
+    refresh_schedule: str = "0 3 * * *"
+    """
+    Crontab expression to schedule when to refresh feeds. Default is every day at 3am
+    """
+    refresh_threads: int = 12
 
 
     @property

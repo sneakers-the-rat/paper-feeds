@@ -34,22 +34,23 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.11"
-fastapi = "^0.108.0"
-sqlmodel = "^0.0.14"
-pydantic-settings = "^2.1.0"
-uvicorn = "^0.25.0"
-jinja2 = "^3.1.2"
-requests = "^2.31.0"
-python-multipart = "^0.0.6"
-fastapi-rss = "^0.2.2"
-alembic = "^1.13.1"
+fastapi = ">=0.108.0"
+sqlmodel = ">=0.0.14"
+#pydantic-settings = ">=2.1.0"
+uvicorn = ">=0.25.0"
+jinja2 = ">=3.1.2"
+requests = ">=2.31.0"
+python-multipart = ">=0.0.6"
+fastapi-rss = ">=0.2.2"
+alembic = ">=1.13.1"
+rocketry = ">=2.5.1"
+pydantic = {version = "<2", extras = ["dotenv"]} # until rocketry fixes pydantic 2 compatibility - https://github.com/Miksus/rocketry/issues/210
 pytest = {version = "^7.4.4", optional = true}
 requests-cache = {version = "^1.1.1", optional = true}
 coveralls = {version = "^3.3.1", optional = true}
 pytest-cov = {version = "^4.1.0", optional = true}
 pytest-alembic = {version = "^0.10.7", optional = true}
 pytest-timeout = {version = "^2.2.0", optional = true}
-celery = "^5.3.6"
 
 [tool.poetry.extras]
 tests = ['pytest', 'requests-cache', 'pytest-cov', 'coveralls', 'pytest-alembic', 'pytest-timeout']

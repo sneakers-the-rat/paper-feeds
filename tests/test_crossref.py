@@ -1,9 +1,17 @@
 import pdb
 from .fixtures import db_tables, memory_db
+from datetime import datetime
 
 import pytest
 
-from paper_feeds.services.crossref import fetch_paper_page, fetch_papers, journal_search, store_journal
+from paper_feeds.services.crossref import (
+    fetch_paper_page,
+    fetch_papers,
+    journal_search,
+    store_journal,
+    populate_papers,
+    last_indexed
+)
 from paper_feeds.models.paper import PaperCreate
 
 @pytest.mark.parametrize(
@@ -89,3 +97,38 @@ def test_fetch_less_than_limit():
     """Fetch less than the limit without doing an infinite loop about it"""
     for papers in fetch_papers('2666-0539', limit=1000):
         pass
+
+def test_populate_update(memory_db):
+    """
+    Test that when populating papers, by default we only update the most recent papers
+    since the last time we fetched papers.
+    """
+    journal_name = 'The Journal of Open Source Software'
+    issn = '2475-9066'
+    # first make sure the journal is in the DB
+    store_journal(journal_search(journal_name))
+
+    # initially we should have no papers
+    last = last_indexed(issn)
+    assert last is None
+
+    first_papers = populate_papers(issn, limit=50, return_papers=True)
+    # just to be sure lol
+    assert len(first_papers) == 50
+
+    # we should have gotten back the results ordered by indexed, descending
+    indexed_dates = [paper.indexed for paper in first_papers]
+    assert all([x>=y for x,y in zip(indexed_dates[:-1], indexed_dates[1:])])
+    most_recent = max(indexed_dates)
+    last = last_indexed(issn)
+    assert last == most_recent
+
+    # then when we populate again, even if we leave the limit at 1000, we should get less than that
+    # we can't know in advance how many, but we should only be getting papers from the most recent day (since that's the
+    # finest granularity you can filter on)
+    second_papers = populate_papers(issn, limit=1000, return_papers=True)
+    second_indexed_dates = [paper.indexed for paper in second_papers]
+    assert len(second_papers) < 1000
+    assert most_recent.date() == min(second_indexed_dates).date()
+
+

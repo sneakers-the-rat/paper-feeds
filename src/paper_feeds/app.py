@@ -7,20 +7,22 @@ from fastapi import Depends, FastAPI, Request, Form, BackgroundTasks, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-
 from sqlmodel import select, desc
 from sqlmodel import Session
+from rocketry import Rocketry
+from rocketry.conds import cron
 
 from paper_feeds.config import Config
 from paper_feeds.db import create_tables, get_engine, get_session
-from paper_feeds.services import crossref
+from paper_feeds.services import crossref, refresh
 from paper_feeds.models.paper import PaperRead
 from paper_feeds.models.rss import PaperRSSFeed
 from paper_feeds import models
 
 from fastapi_rss import RSSResponse
 
-
+# --------------------------------------------------
+# FastAPI Module-level objects (since that's how FastAPI likes to work i guess)
 
 app = FastAPI()
 config = Config()
@@ -32,9 +34,26 @@ templates = Jinja2Templates(
     directory=(Path(__file__).parents[1]  / 'templates').resolve()
 )
 
+# --------------------------------------------------
+# Rocketry does this too...
+
+scheduler = Rocketry(
+    execution="async"
+)
+
+# --------------------------------------------------
+# Lifecycle and periodic tasks
+
 @app.on_event("startup")
 def on_startup():
     create_tables(engine)
+
+@scheduler.task(cron(config.refresh_schedule))
+def run_refresh():
+    refresh.update_feeds()
+
+# --------------------------------------------------
+# Routes
 
 @app.get('/', response_class=HTMLResponse)
 async def index(request: Request):

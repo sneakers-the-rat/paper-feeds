@@ -67,7 +67,7 @@ class Paper(PaperBase, table=True):
     # update-to: Optional['Paper']
 
 class PaperRead(PaperBase):
-    pass
+    id: int
 
 class PaperCreate(PaperBase):
 

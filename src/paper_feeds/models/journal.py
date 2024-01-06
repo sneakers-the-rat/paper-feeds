@@ -63,3 +63,8 @@ class ISSNRead(ISSNBase):
 
 class ISSNCreate(ISSNBase):
     pass
+
+from importlib import metadata
+if not metadata.version('pydantic').startswith('2'):
+    JournalCreate.update_forward_refs()
+    JournalRead.update_forward_refs()
