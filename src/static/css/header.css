@@ -1,16 +1,43 @@
 /* Header - Start */
+
+.header_section_link {
+    text-decoration: none;
+}
+
 .header_section {
     padding: 10px;
     text-align: center;
     background-image: linear-gradient(to right, rgb(0, 62, 124) , rgb(0, 105, 211));
     color: white;
+    position: relative;
 }
 
-.header_section .h1 {
+.header_section::before {
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: linear-gradient(to right, rgb(0, 105, 211) , rgb(21, 114, 213));
+    /*z-index: -1;*/
+    transition: opacity 0.5s linear;
+    opacity: 0;
+}
+
+.header_section:hover::before {
+    opacity: 1
+}
+
+.header_section h1 {
     font-size: 2.5vw;
+    z-index: 2;
+    position: relative;
 }
 
-.header_section .p {
+.header_section p {
     font-size: 1.8vw;
+    z-index: 2;
+    position:relative;
 }
 /* Header - End */

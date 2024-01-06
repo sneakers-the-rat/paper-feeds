@@ -43,14 +43,15 @@ API:
 - [x] Paginate papers by journal
 - [x] Store papers in db
 - [x] Populate papers when feed created
-- [ ] Create RSS feed from papers by issn
+- [x] Create RSS feed from papers by issn
+- [ ] Create *good* RSS feeds using some [best practices from crossref](http://oxford.crossref.org/best_practice/rss/)
 - [ ] Cache RSS feeds
 - [ ] Scheduled update of feed metadata
 
 Frontend
 - [x] Search for journal
 - [x] Display list of journals
-- [ ] Pages for each journal
+- [x] Pages for each journal
 - [x] Create new feed button
 - [ ] Copy feed link
 - [ ] Export feeds
