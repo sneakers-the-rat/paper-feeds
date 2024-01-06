@@ -1,4 +1,4 @@
-from typing import Optional, Union, Tuple, List, Dict, Literal, TYPE_CHECKING
+from typing import Optional, Union, Tuple, List, Dict, Literal, TYPE_CHECKING, ClassVar
 from datetime import datetime, timezone
 
 from sqlmodel import SQLModel, Field, Relationship
@@ -71,10 +71,29 @@ class PaperRead(PaperBase):
 
 class PaperCreate(PaperBase):
 
+    crossref_select: ClassVar[tuple[str]] = (
+        'abstract', 'author', 'created', 'deposited', 'DOI', 'indexed', 'issue', 'issued',
+        'page', 'posted', 'published', 'published-print', 'published-online', 'publisher',
+        'references-count', 'short-title', 'subject', 'title', 'type',
+        'volume', 'URL'
+    )
+    """
+    Fields to select in the crossref query used to get paper metadata.
+    Used to avoid requesting the entire thing, which can be slow!
+    Keep this synchronized with :meth:`.from_crossref` until we can switch that
+    to being a mapping where we can just pull the keys instead of hardcoding like this.
+    """
+
     @classmethod
     def from_crossref(cls, res: dict) -> 'PaperCreate':
         """
         Create a Paper from crossref metadata.
+
+        .. todo::
+
+            Do this as a mapping with a transformation instead of manually like this,
+            eg. ``{'DOI': 'doi', 'author': ('author', _simplify_author)}``
+            This is just a placeholder until then.
 
         References:
             - https://api.crossref.org/swagger-ui/index.html#model-Work
@@ -86,7 +105,7 @@ class PaperCreate(PaperBase):
             author=_simplify_author(res.get('author', [])),
             created=_simplify_datetime(res['created']),
             deposited=_simplify_datetime(res['deposited']),
-            edition_number=res.get('edition-number', None),
+            edition_number=res.get('edition-number', None), # deprecate this, can't be selected
             indexed=_simplify_datetime(res['indexed']),
             issue=res.get('issue', None),
             issued=_simplify_datetime(res.get('issued', None)),
@@ -96,10 +115,10 @@ class PaperCreate(PaperBase):
             published_print=_simplify_datetime(res.get('published-print', None)),
             published_online=_simplify_datetime(res.get('published-online', None)),
             publisher=res['publisher'],
-            reference_count=res.get('reference-count', None),
+            reference_count=res.get('reference-count', None), # deprecate this, can't be selected, get is-referenced-by-count instead which is what we wanted
             references_count=res.get('references-count', None),
             short_title=res.get('short-title', None),
-            source=res.get('source', None),
+            source=res.get('source', None), # deprecate this, can't be selected and usually just "crossref"
             subject=', '.join(res.get('subject', [''])),
             title=_unwrap_list(res.get('title', [])),
             type=res['type'],

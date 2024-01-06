@@ -4,6 +4,7 @@ from .fixtures import db_tables, memory_db
 import pytest
 
 from paper_feeds.services.crossref import fetch_paper_page, fetch_papers, journal_search, store_journal
+from paper_feeds.models.paper import PaperCreate
 
 @pytest.mark.parametrize(
     'query,issn',
@@ -54,6 +55,20 @@ def test_filter_non_papers():
     journal_item = fetch_paper_page('1674-9251', rows=1, filter='type:journal')
     assert len(journal_item) == 0
 
+def test_select_fields():
+    """
+    Only get those fields indicated by the JournalCreate class
+    """
+    res = fetch_paper_page('0896-6273', clean=False)
+    assert res['status'] == 'ok'
+
+    wanted_keys = set(PaperCreate.crossref_select)
+
+    for item in res['message']['items']:
+        item_keys = set(item.keys())
+        # we won't get every field every time, but we shouldn't get any fields we didn't ask for
+        # aka the set difference of what we got from what we wanted should be empty
+        assert item_keys - wanted_keys == set()
 
 
 @pytest.mark.parametrize(

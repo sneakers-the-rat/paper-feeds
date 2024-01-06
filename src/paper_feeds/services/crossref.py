@@ -1,5 +1,5 @@
 import pdb
-from typing import Optional, List, Generator
+from typing import Optional, List, Generator, overload, Literal
 from datetime import datetime
 
 import requests
@@ -106,22 +106,33 @@ def load_journal(issn: str) -> JournalRead:
 # Papers
 # --------------------------------------------------
 
-
 def fetch_paper_page(
         issn:str,
         rows: int = 100,
         offset: int = 0,
         since_date: Optional[datetime] = None,
+        clean:bool = True,
         **kwargs
-    ) -> list[PaperCreate]:
-    # TODO: Select only fields in the model
+    ) -> list[PaperCreate] | dict:
+    """
+
+    Args:
+        issn (str): ISSN of journal (any ISSN for a given journal gives the same results)
+        rows (int): Number of items to fetch
+        offset (int): Number of items to offset from the most recent (sorted by published date)
+        since_date (:class:`datetime.datetime`): Optional: Get papers only published after this date
+        clean (bool): If ``True`` (default), cast as :class:`.PaperCreate` before returning.
+            Otherwise, return raw result from the `GET` request. Useful mostly for testing
+    """
     params = {
         'sort': 'published',
         'order': 'desc',
         'rows': rows,
         'offset': offset,
-        **kwargs
+        'select': ','.join(PaperCreate.crossref_select),
     }
+    # explicitly passed kwargs override defaults
+    params.update(kwargs)
     if since_date:
         params['from-pub-date'] = since_date.strftime('%y-%m-%d')
 
@@ -129,7 +140,10 @@ def fetch_paper_page(
         f'journals/{issn}/works',
         params = params
     )
-    return _clean_paper_page(res.json())
+    if clean:
+        return _clean_paper_page(res.json())
+    else:
+        return res.json()
 
 def _clean_paper_page(res: dict) -> list[PaperCreate]:
     """Making a separate function in case we need to do some filtering here"""
@@ -186,7 +200,9 @@ def fetch_papers(issn: str, limit: int = 1000, rows=100) -> Generator[list[Paper
 
 def populate_papers(issn: str, limit: int = 1000, rows=100):
     """
-    Background task for :func:`.fetch_papers`
+    Background task for :func:`.fetch_papers`.
+
+
     """
     logger = init_logger()
     logger.debug('fetching papers for ISSN %s', issn)
