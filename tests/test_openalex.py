@@ -1,7 +1,11 @@
 from urllib.parse import urlparse, parse_qs
 
+import pytest
 from paper_feeds.config import config
-from paper_feeds.services.openalex import _openalex_get
+from paper_feeds.services.openalex import (
+    _openalex_get,
+    get_journal_homepages
+)
 
 
 def test_most_basic_api_call():
@@ -32,3 +36,15 @@ def test_email_included_in_params(mocker):
     response = _openalex_get('', {})
     params = parse_qs(urlparse(response.url).query)
     assert params['mailto'][0] == email
+
+
+@pytest.mark.parametrize(
+    'issn,homepage',
+    [
+        ('0024-2160', 'https://academic.oup.com/library'),
+        ('1758-6909', None)
+    ]
+)
+def test_get_journal_homepages(issn, homepage):
+    issn_homepage_map = get_journal_homepages([issn])
+    assert issn_homepage_map[issn] == homepage
