@@ -1,20 +1,9 @@
 <div class="feed-container">
     <div class="feed-search">
-        <input
-            class="form-control feed-search-input"
-            type="search"
-            name="search"
-            placeholder="Search for a journal..."
-            hx-post="/search"
-            hx-trigger="input changed delay:500ms, search"
-            hx-indicator=".search-indicator"
-            hx-target="#search-results"
-        >
-        <span class="htmx-indicator search-indicator">
-            <img src="/static/img/rings.svg"/>
-        </span>
+        {% include "partials/search-button.html" %}
     </div>
 
+    <!-- Table -->
     <div class="feed-list" id="search-results">
     </div>
 </div>

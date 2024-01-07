@@ -1,0 +1,23 @@
+<form 
+  id="search-form" 
+  hx-post="/search"
+  hx-indicator=".search-indicator"
+  hx-target="#search-results"
+>
+    <select name="search-type">
+        <option value="journal">Journal</option>
+        <option value="orcid">ORCID</option>
+        <option value="keyword">Keyword</option>
+        <option value="publisher">Publisher</option>
+    </select>
+    <input 
+        type="search" 
+        name="search" 
+        placeholder="Browse journals..."
+        hx-target="#search-form"
+        hx-trigger="input changed delay:500ms, search"
+    >
+    <span class="htmx-indicator search-indicator">
+        <img src="/static/img/rings.svg"/>
+    </span>
+</form>
