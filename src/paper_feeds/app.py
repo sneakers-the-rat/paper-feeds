@@ -67,8 +67,6 @@ async def search(request: Request,
 @app.get('/journals/{issn}')
 async def journal_page(request: Request, issn:str):
     journal = crossref.load_journal(issn)
-    if journal.homepage_url is None:
-        journal.homepage_url = '-'
 
     # TODO: Trigger background task to update papers in journal here
 
