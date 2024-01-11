@@ -17,6 +17,7 @@ from paper_feeds.services import crossref
 from paper_feeds.models.paper import PaperRead
 from paper_feeds.models.rss import PaperRSSFeed
 from paper_feeds import models
+from paper_feeds.const import TEMPLATE_DIR, STATIC_DIR
 
 from fastapi_rss import RSSResponse
 
@@ -26,10 +27,13 @@ app = FastAPI()
 config = Config()
 engine = get_engine(config)
 
-app.mount('/static', StaticFiles(
-    directory=(Path(__file__).parents[1] / 'static').resolve()), name='static')
+app.mount(
+    '/static',
+    StaticFiles(directory=STATIC_DIR),
+    name='static'
+)
 templates = Jinja2Templates(
-    directory=(Path(__file__).parents[1]  / 'templates').resolve()
+    directory=TEMPLATE_DIR
 )
 
 @app.on_event("startup")
