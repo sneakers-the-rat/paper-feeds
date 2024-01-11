@@ -2,6 +2,10 @@
 
 ## v0.0.x
 
+- v0.0.4:
+  - **Bugfix** - [#34](https://github.com/sneakers-the-rat/paper-feeds/issues/34) - correctly package static files and templates
+  - **Bugfix** - [#29](https://github.com/sneakers-the-rat/paper-feeds/issues/29) - Use mailto parameter when calling crossref
+  - **Feature** - Pages for each journal feed
 - v0.0.3:
   - **Meta:** - Change name to `paper-feeds`
   - **Frontend:** - [#11](https://github.com/sneakers-the-rat/journal-rss/pull/11) - Improved CSS/HTML structure from [@roaldarbol](https://github.com/roaldarbol) 
