@@ -69,7 +69,7 @@ Feed Types
 Feed Formats
 - [ ] RSS
   - [x] RSS feed from papers by issn
-  - [ ] Linked Data-enriched RSS feeds
+  - [ ] Linked Data-enriched RSS feeds (see [crossref's advice](http://oxford.crossref.org/best_practice/rss/))
   - [ ] HTML formatting for item details
 - [ ] Activitypub
   - [ ] Actors for feeds

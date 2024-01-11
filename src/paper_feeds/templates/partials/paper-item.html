@@ -1,0 +1,25 @@
+<div class="paper-container">
+    <details>
+        <summary>
+        <h3 class="paper-title">{{ paper.title }}</h3>
+        <div class="paper-metadata">
+            <div class="metadata-item doi">
+                <span class="metadata-key">DOI:</span>
+                <span class="metadata-value"><a href="https://dx.doi.org/{{ paper.doi }}">{{ paper.doi }}</a></span>
+            </div>
+            <div class="metadata-item author">
+                <span class="metadata-key">Author(s):</span>
+                <span class="metadata-value">{{ paper.author }}</span>
+            </div>
+            <div class="metadata-item published">
+                <span class="metadata-key">Published:</span>
+                <span class="metadata-value">{{ paper.published }}</span>
+            </div>
+
+        </div>
+        </summary>
+        <p class="abstract">
+            {{ paper.abstract }}
+        </p>
+    </details>
+</div>

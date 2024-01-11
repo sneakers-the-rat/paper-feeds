@@ -52,7 +52,7 @@ class PaperRSSFeed(RSSFeed):
             # get papers
             paper_statement = select(Paper).join(Journal
                  ).where(Paper.journal_id == journal.id
-                 ).order_by(desc(Paper.created)
+                 ).order_by(desc(Paper.published)
                  ).limit(limit)
             papers = session.exec(paper_statement).all()
 
