@@ -1,19 +1,21 @@
-import requests
+from typing import Optional
 
-from paper_feeds.config import config
+import requests
 
 OPENALEX_API_URL = 'https://api.openalex.org/'
 SOURCES_ENDPOINT = 'sources'
 USER_AGENT = 'paper-feeds (https://github.com/sneakers-the-rat/paper-feeds)'
 
 
-def _openalex_get(endpoint: str, params: dict) -> requests.Response:
+def _openalex_get(endpoint: str, params: dict,
+                  email: Optional[str]) -> requests.Response:
     """
     Sends a GET request to the OpenAlex API endpoint with optional parameters.
 
     Args:
         endpoint (str): The API endpoint to query.
         params (dict): Optional query parameters to include in the request.
+        email (Optional[str]): An optional email address used to access OpenAlex`s polite pool.
 
     Returns:
         requests.Response: The response object containing the data.
@@ -24,8 +26,8 @@ def _openalex_get(endpoint: str, params: dict) -> requests.Response:
 
     # let OpenAlex know who you are, so you can enter their polite pool
     # https://docs.openalex.org/how-to-use-the-api/rate-limits-and-authentication#authentication
-    if config.crossref_email:
-        params['mailto'] = config.crossref_email
+    if email:
+        params['mailto'] = email
 
     headers = {'User-Agent': USER_AGENT}
 
@@ -35,12 +37,13 @@ def _openalex_get(endpoint: str, params: dict) -> requests.Response:
                         headers=headers)
 
 
-def get_journal_homepages(issns: list[str]) -> dict:
+def get_journal_homepages(issns: list[str], email: Optional[str]) -> dict:
     """
     Get homepage URLs for a list of ISSNs.
 
     Args:
         issns (list of str): A list of ISSNs for which homepage URLs are requested.
+        email (Optional[str]): An optional email address used to access OpenAlex`s polite pool.
 
     Returns:
         dict: A dictionary mapping ISSNs to their corresponding homepage URLs.
@@ -57,7 +60,7 @@ def get_journal_homepages(issns: list[str]) -> dict:
                   'per_page': slice_size,
                   'filter': f'issn:{pipe_separated_issns}'}
 
-        response = _openalex_get(SOURCES_ENDPOINT, params)
+        response = _openalex_get(SOURCES_ENDPOINT, params, email)
 
         if response.status_code == 200:
             results = response.json().get('results', [])

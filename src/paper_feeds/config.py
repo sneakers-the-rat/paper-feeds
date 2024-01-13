@@ -43,6 +43,3 @@ class Config(BaseSettings):
     def __post_init__(self):
         self.db.parent.mkdir(exist_ok=True, parents=True)
         self.log_dir.mkdir(exist_ok=True, parents=True)
-
-
-config = Config()
