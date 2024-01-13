@@ -8,6 +8,20 @@ USER_AGENT = 'paper-feeds (https://github.com/sneakers-the-rat/paper-feeds)'
 
 
 def _openalex_get(endpoint: str, params: dict) -> requests.Response:
+    """
+    Sends a GET request to the OpenAlex API endpoint with optional parameters.
+
+    Args:
+        endpoint (str): The API endpoint to query.
+        params (dict): Optional query parameters to include in the request.
+
+    Returns:
+        requests.Response: The response object containing the data.
+
+    Raises:
+        requests.RequestException: If a network-related issue occurs during the request.
+    """
+
     # let OpenAlex know who you are, so you can enter their polite pool
     # https://docs.openalex.org/how-to-use-the-api/rate-limits-and-authentication#authentication
     if config.crossref_email:
@@ -22,7 +36,15 @@ def _openalex_get(endpoint: str, params: dict) -> requests.Response:
 
 
 def get_journal_homepages(issns: list[str]) -> dict:
-    """ Get homepage urls for a bunch of ISSNs. """
+    """
+    Get homepage URLs for a list of ISSNs.
+
+    Args:
+        issns (list of str): A list of ISSNs for which homepage URLs are requested.
+
+    Returns:
+        dict: A dictionary mapping ISSNs to their corresponding homepage URLs.
+    """
 
     # minimize API calls using approach outlined in OpenAlex blog
     # https://blog.ourresearch.org/fetch-multiple-dois-in-one-openalex-api-request/
@@ -45,7 +67,16 @@ def get_journal_homepages(issns: list[str]) -> dict:
 
 
 def _index_issns(journals: list[str]) -> dict:
-    """ Create map: issn -> homepage_url for quick lookup """
+    """
+    Create a mapping of ISSN to homepage URL for quick lookup.
+
+    Args:
+        journals (list of dict): A list of journal dictionaries.
+
+    Returns:
+        dict: A dictionary mapping ISSNs to their corresponding homepage URLs.
+    """
+
     return {issn: journal.get('homepage_url', None)
             for journal in journals
             for issn in journal.get('issn', [])}
