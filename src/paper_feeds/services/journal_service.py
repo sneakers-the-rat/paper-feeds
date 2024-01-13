@@ -1,11 +1,23 @@
+from sqlmodel import Session
+
 from paper_feeds.config import config
 from paper_feeds.db import get_engine
-from paper_feeds.models.journal import Journal, ISSN
+from paper_feeds.models.journal import Journal
+from paper_feeds.repositories.journal_repository import update_journal_homepages
 from paper_feeds.services import openalex
-from sqlmodel import Session, select
 
 
-def get_journals_homepage(journals: list[Journal]):
+def get_journal_homepages(journals: list[Journal]):
+    """
+    Retrieves homepage URLs for journals from OpenAlex API and stores them in the database.
+
+    Args:
+        journals (list[Journal]): A list of Journal objects for which homepage URLs need to be obtained.
+
+    Returns:
+        None
+    """
+
     # extract one issn of each journal newly added to DB
     issns_to_query = []
     for journal in journals:
@@ -21,25 +33,6 @@ def get_journals_homepage(journals: list[Journal]):
                              issns_to_update}
 
     # store homepage_urls in DB
-    update_journals_homepage_urls(issn_hp_map_to_update)
-
-
-def update_journals_homepage_urls(issn_hp_map: dict) -> None:
-    """
-    Update homepage_url for multiple Journals
-    based on mapping: issn -> homepage_url.
-    """
     engine = get_engine(config)
     with Session(engine) as session:
-
-        for issn, homepage_url in issn_hp_map.items():
-            # fetch Journal by ISSN
-            statement = select(Journal).join(ISSN).where(ISSN.value == issn)
-            journal = session.exec(statement).one()
-
-            # update homepage_url
-            if journal:
-                journal.homepage_url = homepage_url
-                session.add(journal)
-                session.commit()
-                session.refresh(journal)
+        update_journal_homepages(session, issn_hp_map_to_update)

@@ -55,7 +55,7 @@ async def search(request: Request,
     results = crossref.store_journal(results)
 
     # look for journal's homepage in the background
-    background.add_task(journal_service.get_journals_homepage, journals=results)
+    background.add_task(journal_service.get_journal_homepages, journals=results)
 
     return templates.TemplateResponse(
         'partials/feed-list.html',
