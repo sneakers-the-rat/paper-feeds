@@ -13,7 +13,7 @@ from sqlmodel import Session
 
 from paper_feeds.config import Config
 from paper_feeds.db import create_tables, get_engine, get_session
-from paper_feeds.services import crossref
+from paper_feeds.services import crossref, journal_service
 from paper_feeds.models.paper import PaperRead
 from paper_feeds.models.rss import PaperRSSFeed
 from paper_feeds import models
@@ -45,12 +45,19 @@ async def index(request: Request):
     return templates.TemplateResponse('pages/index.html', {"request": request})
 
 @app.post('/search')
-async def search(request: Request, search: Annotated[str, Form()]):
+async def search(request: Request,
+                 search: Annotated[str, Form()],
+                 background: BackgroundTasks):
     """
     Search for a journal using the crossref API
     """
     results = crossref.journal_search(search)
     results = crossref.store_journal(results)
+
+    # look for journal's homepage in the background
+    background.add_task(journal_service.get_journal_homepages,
+                        journals=results,
+                        email=config.crossref_email)
 
     return templates.TemplateResponse(
         'partials/feed-list.html',
