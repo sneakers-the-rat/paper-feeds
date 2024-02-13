@@ -2,6 +2,8 @@
 
 ## v0.0.x
 
+- v0.0.5:
+  - **Feature** - [@smierz](https://github.com/smierz)[#31](https://github.com/sneakers-the-rat/paper-feeds/pull/31) - Get journal homepage from openalex 
 - v0.0.4:
   - **Bugfix** - [#34](https://github.com/sneakers-the-rat/paper-feeds/issues/34) - correctly package static files and templates
   - **Bugfix** - [#29](https://github.com/sneakers-the-rat/paper-feeds/issues/29) - Use mailto parameter when calling crossref
