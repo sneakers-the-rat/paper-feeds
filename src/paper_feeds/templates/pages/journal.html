@@ -9,10 +9,12 @@
             <span class="metadata-key">Publisher:</span>
             <span class="metadata-value">{{ journal.publisher }}</span>
         </div>
+        {% if journal.homepage_url %}
         <div class="metadata-item">
             <span class="metadata-key">Homepage:</span>
-            <span class="metadata-value">TODO add homepage to journal model</span>
+            <a class="metadata-value" href="{{ journal.homepage_url }}">{{ journal.homepage_url }}</a>
         </div>
+        {% endif %}
         <div class="metadata-item">
             <span class="metadata-key">Recent Papers:</span>
             <span class="metadata-value">{{ journal.recent_paper_count }}</span>
