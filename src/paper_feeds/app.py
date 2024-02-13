@@ -14,10 +14,11 @@ from rocketry.conds import cron
 
 from paper_feeds.config import Config
 from paper_feeds.db import create_tables, get_engine, get_session
-from paper_feeds.services import crossref, refresh
+from paper_feeds.services import crossref, refresh, journal_service
 from paper_feeds.models.paper import PaperRead
 from paper_feeds.models.rss import PaperRSSFeed
 from paper_feeds import models
+from paper_feeds.const import TEMPLATE_DIR, STATIC_DIR
 
 from fastapi_rss import RSSResponse
 
@@ -28,10 +29,13 @@ app = FastAPI()
 config = Config()
 engine = get_engine(config)
 
-app.mount('/static', StaticFiles(
-    directory=(Path(__file__).parents[1] / 'static').resolve()), name='static')
+app.mount(
+    '/static',
+    StaticFiles(directory=STATIC_DIR),
+    name='static'
+)
 templates = Jinja2Templates(
-    directory=(Path(__file__).parents[1]  / 'templates').resolve()
+    directory=TEMPLATE_DIR
 )
 
 # --------------------------------------------------
@@ -60,12 +64,19 @@ async def index(request: Request):
     return templates.TemplateResponse('pages/index.html', {"request": request})
 
 @app.post('/search')
-async def search(request: Request, search: Annotated[str, Form()]):
+async def search(request: Request,
+                 search: Annotated[str, Form()],
+                 background: BackgroundTasks):
     """
     Search for a journal using the crossref API
     """
     results = crossref.journal_search(search)
     results = crossref.store_journal(results)
+
+    # look for journal's homepage in the background
+    background.add_task(journal_service.get_journal_homepages,
+                        journals=results,
+                        email=config.crossref_email)
 
     return templates.TemplateResponse(
         'partials/feed-list.html',

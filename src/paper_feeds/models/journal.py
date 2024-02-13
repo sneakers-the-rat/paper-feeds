@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 class JournalBase(SQLModel):
     title: str
     publisher: str
+    homepage_url: Optional[str] = None
     recent_paper_count: int
     feed: bool = False
     feed_created: Optional[datetime] = None

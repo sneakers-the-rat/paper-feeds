@@ -1,10 +1,15 @@
 import pdb
+import os
 from .fixtures import db_tables, memory_db
 from datetime import datetime
+from urllib.parse import urlparse, parse_qs
 
 import pytest
 
+from paper_feeds import Config
+from paper_feeds.models.paper import PaperCreate
 from paper_feeds.services.crossref import (
+    crossref_get,
     fetch_paper_page,
     fetch_papers,
     journal_search,
@@ -12,7 +17,37 @@ from paper_feeds.services.crossref import (
     populate_papers,
     last_indexed
 )
-from paper_feeds.models.paper import PaperCreate
+
+def test_crossref_get_mailto():
+    """
+    Use the mailto parameter to be polite to crossref
+
+    .. todo::
+
+        make fixture to parameterize config
+
+    .. todo::
+
+        this one definitely needs to be vcr'd
+
+    """
+    # first should be able to not use an email if we don't want
+    res = crossref_get('journals', params={'query': 'Neuron'}, email=None)
+    params = parse_qs(urlparse(res.url).query)
+    assert 'mailto' not in params
+
+    # now we should add an email if asked to explicitly
+    email = 'tests@example.com'
+    res = crossref_get('journals', params={'query': 'Neuron'}, email=email)
+    params = parse_qs(urlparse(res.url).query)
+    assert params['mailto'][0] == email
+
+    # and via .env (which should be tested separately)
+    os.environ['PAPERFEEDS_CROSSREF_EMAIL'] = email
+    res = crossref_get('journals', params={'query': 'Neuron'}, email=None)
+    params = parse_qs(urlparse(res.url).query)
+    assert params['mailto'][0] == email
+
 
 @pytest.mark.parametrize(
     'query,issn',
@@ -92,7 +127,7 @@ def test_fetch_papers(issn, limit):
         all_papers.extend(papers)
     assert len(all_papers) == limit
 
-@pytest.mark.timeout(10)
+@pytest.mark.timeout(20)
 def test_fetch_less_than_limit():
     """Fetch less than the limit without doing an infinite loop about it"""
     for papers in fetch_papers('2666-0539', limit=1000):

@@ -9,8 +9,11 @@ Many journals still have RSS feeds. Some don't though, as they try
 and squeeze everyone onto their platforms to monetize our 
 engagement data.
 
-This is a simple web app for creating RSS feeds for journals by
-collecting metadata from crossref. Dependencies are kept minimal, as
+This is a simple web app for creating feeds (currently RSS, soon ActivityPub and Atom) for academic papers by
+collecting metadata from multiple data sources. It intended to be a publicly- and self-hostable
+toolkit for subscribing to and curating scholarly literature!
+
+Dependencies are kept minimal, as
 is deployment - No webpack, no complex build, no postgres,
 just pip install and press play :).
 
@@ -35,7 +38,7 @@ a development environment
 
 # progress
 
-Everything is just getting started! things will break and change!
+Everything is just getting started! things will break and change! To be moved to docs when made. Help wanted on all, open an issue <3
 
 API:
 - [x] Query Crossref for journal
@@ -43,10 +46,11 @@ API:
 - [x] Paginate papers by journal
 - [x] Store papers in db
 - [x] Populate papers when feed created
-- [x] Create RSS feed from papers by issn
-- [ ] Create *good* RSS feeds using some [best practices from crossref](http://oxford.crossref.org/best_practice/rss/)
-- [ ] Cache RSS feeds
+- [ ] Periodic database updates
+- [ ] Cache Feed output
 - [ ] Scheduled update of feed metadata
+- [ ] Backfill Abstracts and other additional data
+- [ ] Feed statistics
 
 Frontend
 - [x] Search for journal
@@ -55,8 +59,54 @@ Frontend
 - [x] Create new feed button
 - [ ] Copy feed link
 - [ ] Export feeds
+- [ ] Show existing feeds, stats, threads
+
+Feed Types
+- [x] Journals
+- [ ] Authors (via ORCID)
+- [ ] Keywords
+
+Feed Formats
+- [ ] RSS
+  - [x] RSS feed from papers by issn
+  - [ ] Linked Data-enriched RSS feeds (see [crossref's advice](http://oxford.crossref.org/best_practice/rss/))
+  - [ ] HTML formatting for item details
+- [ ] Activitypub
+  - [ ] Actors for feeds
+  - [ ] LD-enriched ActivityStreams actions
+  - [ ] Bot-Actor for instance
+  - [ ] DOI mention detection & crossref events data
+  - [ ] Hashtag -> keyword detection
+  - [ ] Create threads under feed actor with mention
+
+Data Sources
+- [x] Crossref
+  - [x] Journals
+  - [x] Papers
+  - [ ] Events
+- [ ] OpenAlex
+- [ ] ORCID
+- [ ] PubPeer
+- [ ] RetractionWatch
+- [ ] Hypothes.is
+
+Meta
+- [ ] Docs
+  - [ ] We need em! Sphinx & RTD!
+  - [ ] Move this list to there
+  - [ ] Scope
+  - [ ] Design
+  - [ ] Usage
+  - [ ] Configuration
+- [ ] Tests
+  - [x] Basic CI
 
 # Credits
+- El Duvelle, whose need for RSS feeds inspired this project
+- @lambdaloop (list PRs)
+- @roaldarbol (list PRs)
+
+# References
 
 - https://github.com/marty331/fasthtmx/
 - https://samherbert.net/svg-loaders/

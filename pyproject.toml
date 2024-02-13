@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "paper-feeds"
-version = "0.0.3"
+version = "0.0.5"
 description = "A FastAPI web server for creating RSS and ActivityPub feeds for scholarly literature with the magic of adversarial interoperability"
 authors = ["sneakers-the-rat <JLSaunders987@gmail.com>"]
 repository = "https://github.com/sneakers-the-rat/paper-feeds"
@@ -9,10 +9,7 @@ readme = "README.md"
 packages = [
     { include = "paper_feeds", from="src" }
 ]
-include = [
-    "src/static/*",
-    "src/templates/*"
-]
+
 keywords = ["rss", "activitypub", "scholarly communication", "scholcomm", "fastapi", "metadata"]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
