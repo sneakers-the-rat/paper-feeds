@@ -11,8 +11,9 @@ from paper_feeds.services.crossref import (
     fetch_paper_page,
     fetch_papers,
     journal_search,
-    store_journal
+    store_journal,
 )
+
 
 def test_crossref_get_mailto():
     """
@@ -28,29 +29,24 @@ def test_crossref_get_mailto():
 
     """
     # first should be able to not use an email if we don't want
-    res = crossref_get('journals', params={'query': 'Neuron'}, email=None)
+    res = crossref_get("journals", params={"query": "Neuron"}, email=None)
     params = parse_qs(urlparse(res.url).query)
-    assert 'mailto' not in params
+    assert "mailto" not in params
 
     # now we should add an email if asked to explicitly
-    email = 'tests@example.com'
-    res = crossref_get('journals', params={'query': 'Neuron'}, email=email)
+    email = "tests@example.com"
+    res = crossref_get("journals", params={"query": "Neuron"}, email=email)
     params = parse_qs(urlparse(res.url).query)
-    assert params['mailto'][0] == email
+    assert params["mailto"][0] == email
 
     # and via .env (which should be tested separately)
-    os.environ['PAPERFEEDS_CROSSREF_EMAIL'] = email
-    res = crossref_get('journals', params={'query': 'Neuron'}, email=None)
+    os.environ["PAPERFEEDS_CROSSREF_EMAIL"] = email
+    res = crossref_get("journals", params={"query": "Neuron"}, email=None)
     params = parse_qs(urlparse(res.url).query)
-    assert params['mailto'][0] == email
+    assert params["mailto"][0] == email
 
 
-@pytest.mark.parametrize(
-    'query,issn',
-    [
-        ('Neuron', '0896-6273')
-    ]
-)
+@pytest.mark.parametrize("query,issn", [("Neuron", "0896-6273")])
 def test_search_journal(query, issn, memory_db):
     res = journal_search(query)
     # check that we got the expected journal from the query
@@ -75,15 +71,11 @@ def test_search_journal(query, issn, memory_db):
     assert issn in issns
 
 
-@pytest.mark.parametrize(
-    ('issn'),
-    (
-        '0896-6273',  # Neuron
-    )
-)
+@pytest.mark.parametrize(("issn"), ("0896-6273",))  # Neuron
 def test_fetch_paper_page(issn):
     # the models validating is the test passing lol
     papers = fetch_paper_page(issn)
+
 
 def test_filter_non_papers():
     """
@@ -91,17 +83,11 @@ def test_filter_non_papers():
     - https://github.com/sneakers-the-rat/paper-feeds/issues/16
     """
     # result known to be a `journal` type
-    journal_item = fetch_paper_page('1674-9251', rows=1, filter='type:journal')
+    journal_item = fetch_paper_page("1674-9251", rows=1, filter="type:journal")
     assert len(journal_item) == 0
 
 
-
-@pytest.mark.parametrize(
-    ('issn,limit'),
-    (
-            ('0896-6273', 200),  # Neuron
-    )
-)
+@pytest.mark.parametrize(("issn,limit"), (("0896-6273", 200),))  # Neuron
 def test_fetch_papers(issn, limit):
     # the models validating is the test passing for now
     all_papers = []
@@ -109,8 +95,9 @@ def test_fetch_papers(issn, limit):
         all_papers.extend(papers)
     assert len(all_papers) == limit
 
+
 @pytest.mark.timeout(20)
 def test_fetch_less_than_limit():
     """Fetch less than the limit without doing an infinite loop about it"""
-    for papers in fetch_papers('2666-0539', limit=1000):
+    for papers in fetch_papers("2666-0539", limit=1000):
         pass

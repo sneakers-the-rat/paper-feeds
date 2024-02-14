@@ -1,5 +1,3 @@
-from typing import Optional
-
 from sqlmodel import Session
 
 from paper_feeds.db import get_engine
@@ -8,13 +6,16 @@ from paper_feeds.repositories.journal_repository import update_journal_homepages
 from paper_feeds.services import openalex
 
 
-def get_journal_homepages(journals: list[Journal], email: Optional[str]):
+def get_journal_homepages(journals: list[Journal], email: str | None) -> None:
     """
-    Retrieves homepage URLs for journals from OpenAlex API and stores them in the database.
+    Retrieves homepage URLs for journals from OpenAlex API and stores them in the
+    database.
 
     Args:
-        journals (list[Journal]): A list of Journal objects for which homepage URLs need to be obtained.
-        email (Optional[str]): An optional email address used to access OpenAlex`s polite pool.
+        journals (list[Journal]): A list of Journal objects for which homepage URLs
+            need to be obtained.
+        email (Optional[str]): An optional email address used to access OpenAlex`s
+            polite pool.
 
     Returns:
         None
@@ -31,8 +32,7 @@ def get_journal_homepages(journals: list[Journal], email: Optional[str]):
 
     # filter incoming issns: only keep the ones where homepage URL has value
     issns_to_update = [issn for issn in issns_to_query if issn_hp_map[issn]]
-    issn_hp_map_to_update = {issn: issn_hp_map[issn] for issn in
-                             issns_to_update}
+    issn_hp_map_to_update = {issn: issn_hp_map[issn] for issn in issns_to_update}
 
     # store homepage_urls in DB
     engine = get_engine()

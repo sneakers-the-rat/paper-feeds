@@ -46,9 +46,19 @@ coveralls = {version = "^3.3.1", optional = true}
 pytest-cov = {version = "^4.1.0", optional = true}
 pytest-alembic = {version = "^0.10.7", optional = true}
 pytest-timeout = {version = "^2.2.0", optional = true}
+black = {version = "^24.1.1", optional = true}
+ruff = {version = "^0.2.0", optional = true}
+pre-commit = {version = "^3.6.1", optional = true}
+
 
 [tool.poetry.extras]
 tests = ['pytest', 'requests-cache', 'pytest-cov', 'coveralls', 'pytest-alembic', 'pytest-timeout']
+dev = [
+    # tests
+    'pytest', 'requests-cache', 'pytest-cov', 'coveralls', 'pytest-alembic', 'pytest-timeout',
+    # linting
+    'black', 'ruff', 'pre-commit'
+]
 
 [tool.poetry.scripts]
 start = "paper_feeds.main:start"
@@ -73,3 +83,52 @@ omit = [
     "src/paper_feeds/templates/*"
 ]
 
+
+[tool.ruff]
+target-version = "py311"
+include = ["src/**/*.py", "pyproject.toml"]
+exclude = ["tests"]
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # annotations
+    "ANN001", "ANN002", "ANN002", "ANN201", "ANN205", "ANN206",
+    ## ----------
+    # pydocstyle
+    # undocumented public objects
+    # reinstate when ruff supports changing severity - https://github.com/astral-sh/ruff/issues/1256
+    # "D100", "D101", "D102", "D103", "D104", "D106", "D107",
+    # indentation
+    "D207", "D208",
+    # whitespace
+    "D210", "D211",
+    # emptiness
+    "D419"
+
+]
+ignore = [
+    "UP007"
+]
+
+fixable = ["ALL"]
+
+[tool.ruff.lint.per-file-ignores]
+# unused imports in __init__ is fine actually
+"__init__.py" = ["E402", "F401"]
+
+[tool.mypy]
+plugins = [
+    "pydantic.mypy"
+]

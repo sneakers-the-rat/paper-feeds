@@ -1,23 +1,28 @@
-from typing import Optional, List, Generator
+from collections.abc import Generator
 from datetime import datetime
 
 import requests
-from sqlmodel import Session, select
 from sqlalchemy.orm import selectinload
+from sqlmodel import Session, select
 
-from paper_feeds import Config
-from paper_feeds.models.journal import JournalCreate, Journal, JournalRead, ISSN
-from paper_feeds.models.paper import PaperCreate, Paper
+from paper_feeds import Config, init_logger
 from paper_feeds.db import get_engine
-from paper_feeds import init_logger
+from paper_feeds.models.journal import ISSN, Journal, JournalCreate, JournalRead
+from paper_feeds.models.paper import Paper, PaperCreate
 
-
-CROSSREF_API_URL = 'https://api.crossref.org/'
-USER_AGENT = 'paper-feeds (https://github.com/sneakers-the-rat/paper-feeds)'
+CROSSREF_API_URL = "https://api.crossref.org/"
+USER_AGENT = "paper-feeds (https://github.com/sneakers-the-rat/paper-feeds)"
 PAPER_TYPES = (
-    'journal-article', 'book', 'book-chapter', 'book-part', 'book-section',
-    'edited-book', 'proceedings-article', 'reference-book', 'dissertation',
-    'report'
+    "journal-article",
+    "book",
+    "book-chapter",
+    "book-part",
+    "book-section",
+    "edited-book",
+    "proceedings-article",
+    "reference-book",
+    "dissertation",
+    "report",
 )
 """
 Crossref types that we'll treat as a "paper"
@@ -27,9 +32,7 @@ See http://api.crossref.org/types
 
 
 def crossref_get(
-        endpoint: str,
-        params: dict,
-        email: Optional[str] = None
+    endpoint: str, params: dict, email: str | None = None
 ) -> requests.Response:
     """
     .. todo::
@@ -45,42 +48,39 @@ def crossref_get(
     Returns:
         :class:`requests.Response`
     """
-    headers = {
-        'User-Agent': USER_AGENT
-    }
+    headers = {"User-Agent": USER_AGENT}
     if email is None:
         email = Config().crossref_email
 
     if email:
-        params.update({
-            'mailto': email
-        })
+        params.update({"mailto": email})
     return requests.get(
         CROSSREF_API_URL + endpoint,
         params=params,
-        headers=headers
+        headers=headers,
+        timeout=Config().requests_timeout,
     )
+
 
 # --------------------------------------------------
 # Journals
 # --------------------------------------------------
 
-def journal_search(query:str):
 
-    req = crossref_get(
-        'journals',
-        params={
-            'query': query
-        })
+def journal_search(query: str) -> list[JournalCreate]:
+
+    req = crossref_get("journals", params={"query": query})
     return _clean_journal_result(req.json())
+
 
 def _clean_journal_result(res: dict) -> list[JournalCreate]:
     journals = []
-    for j in res['message']['items']:
+    for j in res["message"]["items"]:
 
-        if len(j['issn-type']) > 0:
+        if len(j["issn-type"]) > 0:
             journals.append(JournalCreate.from_crossref(j))
     return journals
+
 
 def store_journal(results: list[JournalCreate]) -> list[JournalRead]:
     engine = get_engine()
@@ -109,10 +109,12 @@ def store_journal(results: list[JournalCreate]) -> list[JournalRead]:
 def load_journal(issn: str) -> JournalRead:
     engine = get_engine()
     with Session(engine) as session:
-        read_statement = select(Journal
-            ).options(selectinload(Journal.issn)
-            ).join(ISSN
-            ).where(ISSN.value == issn)
+        read_statement = (
+            select(Journal)
+            .options(selectinload(Journal.issn))
+            .join(ISSN)
+            .where(ISSN.value == issn)
+        )
         db_journal = session.exec(read_statement).first()
         journal = JournalRead.model_validate(db_journal)
     return journal
@@ -124,32 +126,35 @@ def load_journal(issn: str) -> JournalRead:
 
 
 def fetch_paper_page(
-        issn:str,
-        rows: int = 100,
-        offset: int = 0,
-        since_date: Optional[datetime] = None,
-        **kwargs
-    ) -> list[PaperCreate]:
+    issn: str,
+    rows: int = 100,
+    offset: int = 0,
+    since_date: datetime | None = None,
+    **kwargs,
+) -> list[PaperCreate]:
     # TODO: Select only fields in the model
     params = {
-        'sort': 'published',
-        'order': 'desc',
-        'rows': rows,
-        'offset': offset,
-        **kwargs
+        "sort": "published",
+        "order": "desc",
+        "rows": rows,
+        "offset": offset,
+        **kwargs,
     }
     if since_date:
-        params['from-pub-date'] = since_date.strftime('%y-%m-%d')
+        params["from-pub-date"] = since_date.strftime("%y-%m-%d")
 
-    res = crossref_get(
-        f'journals/{issn}/works',
-        params = params
-    )
+    res = crossref_get(f"journals/{issn}/works", params=params)
     return _clean_paper_page(res.json())
+
 
 def _clean_paper_page(res: dict) -> list[PaperCreate]:
     """Making a separate function in case we need to do some filtering here"""
-    return [PaperCreate.from_crossref(item) for item in res['message']['items'] if item.get('type', None) in PAPER_TYPES]
+    return [
+        PaperCreate.from_crossref(item)
+        for item in res["message"]["items"]
+        if item.get("type", None) in PAPER_TYPES
+    ]
+
 
 def store_papers(papers: list[PaperCreate], issn: str) -> list[Paper]:
     engine = get_engine()
@@ -182,7 +187,10 @@ def store_papers(papers: list[PaperCreate], issn: str) -> list[Paper]:
 
     return ret
 
-def fetch_papers(issn: str, limit: int = 1000, rows=100) -> Generator[list[Paper],None, None]:
+
+def fetch_papers(
+    issn: str, limit: int = 1000, rows: int = 100
+) -> Generator[list[Paper], None, None]:
     # get the most recent paper to subset paging
     # then get pages and write them as we get the pages
     # then return the completed sql models
@@ -194,18 +202,19 @@ def fetch_papers(issn: str, limit: int = 1000, rows=100) -> Generator[list[Paper
 
     n_papers = len(got_papers)
     while n_papers < limit and len(got_papers) == rows:
-        get_rows = min(limit-n_papers, rows)
+        get_rows = min(limit - n_papers, rows)
         got_papers = fetch_paper_page(issn, get_rows, n_papers)
         stored_papers = store_papers(got_papers, issn)
         n_papers += len(got_papers)
         yield stored_papers
 
-def populate_papers(issn: str, limit: int = 1000, rows=100):
+
+def populate_papers(issn: str, limit: int = 1000, rows: int = 100) -> None:
     """
     Background task for :func:`.fetch_papers`
     """
     logger = init_logger()
-    logger.debug('fetching papers for ISSN %s', issn)
+    logger.debug("fetching papers for ISSN %s", issn)
     fetcher = fetch_papers(issn, limit, rows)
     fetched = 0
 
@@ -213,8 +222,8 @@ def populate_papers(issn: str, limit: int = 1000, rows=100):
         try:
             papers = next(fetcher)
             fetched += len(papers)
-            logger.debug('fetched %d papers', fetched)
+            logger.debug("fetched %d papers", fetched)
         except StopIteration:
             break
 
-    logger.debug('completed paper fetch for %s', issn)
+    logger.debug("completed paper fetch for %s", issn)

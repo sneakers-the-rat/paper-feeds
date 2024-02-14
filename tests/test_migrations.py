@@ -19,6 +19,7 @@ from pytest_alembic.tests import (
     test_upgrade,
 )
 
+
 def test_alembic_version(db_tables):
     """
     Ensure our alembic version function gets the alembic version!
@@ -29,7 +30,7 @@ def test_alembic_version(db_tables):
 
     command.stamp(alembic_config, None)
     assert alembic_version(db_tables) is None
-    command.stamp(alembic_config, 'head')
+    command.stamp(alembic_config, "head")
     version = alembic_version(db_tables)
     # alembic doesn't let us get the actual version number to compare against too easily,
     # so if we've got a string that's good enough for now.

@@ -1,24 +1,25 @@
-from typing import Optional, TYPE_CHECKING
 import importlib.resources
+from collections.abc import Generator
+from typing import TYPE_CHECKING, Optional
 
-from sqlmodel import SQLModel, create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import text
-from alembic.config import Config as AlembicConfig
 from alembic import command
+from alembic.config import Config as AlembicConfig
 from alembic.util.exc import CommandError
+from sqlalchemy import text
+from sqlalchemy.orm import Session, sessionmaker
+from sqlmodel import SQLModel, create_engine
 
+# all models need to be imported when creating tables
 from paper_feeds import Config
 from paper_feeds.decorators import singleton
 from paper_feeds.exceptions import DBMigrationError
-# all models need to be imported when creating tables
-from paper_feeds import models
 
 if TYPE_CHECKING:
     from sqlalchemy.future.engine import Engine
 
+
 @singleton
-def get_engine(config: Optional[Config] = None) -> 'Engine':
+def get_engine(config: Config | None = None) -> "Engine":
     """
     According to the sqlmodel docs, there should be
     one engine per application, and one should use it to
@@ -31,7 +32,7 @@ def get_engine(config: Optional[Config] = None) -> 'Engine':
     return engine
 
 
-def get_session(engine: Optional['Engine'] = None):
+def get_session(engine: Optional["Engine"] = None) -> Generator[Session, None, None]:
     if engine is None:
         engine = get_engine()
     maker = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -42,10 +43,8 @@ def get_session(engine: Optional['Engine'] = None):
     finally:
         db.close()
 
-def create_tables(
-        engine: 'Engine',
-        config:Optional[Config] = None
-    ):
+
+def create_tables(engine: "Engine", config: Config | None = None) -> None:
     """
     Create tables and stamps with an alembic version
 
@@ -65,7 +64,7 @@ def create_tables(
     ensure_alembic_version(engine)
 
 
-def ensure_alembic_version(engine):
+def ensure_alembic_version(engine: "Engine") -> None:
     """
     Make sure that our database is correctly stamped and migrations are applied.
 
@@ -82,19 +81,24 @@ def ensure_alembic_version(engine):
     if version is None:
         # haven't been stamped yet, but we know we are
         # at the head since we just made the db.
-        command.stamp(alembic_config, 'head')
+        command.stamp(alembic_config, "head")
     else:
         try:
             command.check(alembic_config)
-        except CommandError:
+        except CommandError as e:
             # don't automatically migrate since it could be destructive
-            raise DBMigrationError('Database needs to be migrated! Run paper-feeds migrate')
+            raise DBMigrationError(
+                "Database needs to be migrated! Run paper-feeds migrate"
+            ) from e
 
 
 def get_alembic_config() -> AlembicConfig:
-    return AlembicConfig(str(importlib.resources.files('paper_feeds') / 'migrations' / 'alembic.ini'))
+    return AlembicConfig(
+        str(importlib.resources.files("paper_feeds") / "migrations" / "alembic.ini")
+    )
 
-def alembic_version(engine: 'Engine') -> Optional[str]:
+
+def alembic_version(engine: "Engine") -> str | None:
     """
     for some godforsaken reason alembic's command for getting the
     db version ONLY PRINTS IT and does not return it.
