@@ -23,6 +23,8 @@ class Config(BaseSettings):
     their API! https://github.com/CrossRef/rest-api-doc#good-manners--more-reliable-service
     """
     public_url: str = "http://localhost"
+    requests_timeout: float | int = 10
+    """timeout to use with all requests calls"""
 
     @property
     def sqlite_path(self) -> str:

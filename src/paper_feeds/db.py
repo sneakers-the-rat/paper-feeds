@@ -64,7 +64,7 @@ def create_tables(engine: "Engine", config: Config | None = None) -> None:
     ensure_alembic_version(engine)
 
 
-def ensure_alembic_version(engine: Engine) -> None:
+def ensure_alembic_version(engine: "Engine") -> None:
     """
     Make sure that our database is correctly stamped and migrations are applied.
 

@@ -54,7 +54,12 @@ def crossref_get(
 
     if email:
         params.update({"mailto": email})
-    return requests.get(CROSSREF_API_URL + endpoint, params=params, headers=headers)
+    return requests.get(
+        CROSSREF_API_URL + endpoint,
+        params=params,
+        headers=headers,
+        timeout=Config().requests_timeout,
+    )
 
 
 # --------------------------------------------------
