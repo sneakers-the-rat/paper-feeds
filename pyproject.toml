@@ -104,11 +104,12 @@ select = [
     # isort
     "I",
     # annotations
-    "ANN",
+    "ANN001", "ANN002", "ANN002", "ANN201", "ANN205", "ANN206",
     ## ----------
     # pydocstyle
     # undocumented public objects
-    "D100", "D101", "D102", "D103", "D104", "D106", "D107",
+    # reinstate when ruff supports changing severity - https://github.com/astral-sh/ruff/issues/1256
+    # "D100", "D101", "D102", "D103", "D104", "D106", "D107",
     # indentation
     "D207", "D208",
     # whitespace
@@ -118,10 +119,14 @@ select = [
 
 ]
 ignore = [
-    "ANN101", "ANN102"
+    "UP007"
 ]
 
 fixable = ["ALL"]
+
+[tool.ruff.lint.per-file-ignores]
+# unused imports in __init__ is fine actually
+"__init__.py" = ["E402", "F401"]
 
 [tool.mypy]
 plugins = [

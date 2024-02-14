@@ -2,11 +2,13 @@ from paper_feeds.decorators import singleton
 from datetime import datetime
 from time import sleep
 
+
 def test_singleton():
     """
     Singletons should return the same result when called naively, but also create a
     function attribute so that singleton can be manually modified (eg. for testing)
     """
+
     @singleton
     def my_function() -> datetime:
         return datetime.now()
@@ -35,5 +37,3 @@ def test_singleton():
     third_call = my_function()
     assert third_call == new_time
     assert third_call is new_time
-
-

@@ -1,8 +1,9 @@
 import logging
 
-ROOT_LOGGER = 'uvicorn.error'
+ROOT_LOGGER = "uvicorn.error"
 
-def init_logger(name:str = '') -> logging.Logger:
+
+def init_logger(name: str = "") -> logging.Logger:
     """
     Placeholder logging module for now :)
 
@@ -11,8 +12,7 @@ def init_logger(name:str = '') -> logging.Logger:
         fill in with That Good Logging later :)
 
     """
-    name = '.'.join([ROOT_LOGGER, name])
+    name = ".".join([ROOT_LOGGER, name])
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
     return logger
-

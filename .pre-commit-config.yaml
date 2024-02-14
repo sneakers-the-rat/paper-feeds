@@ -5,7 +5,8 @@ repos:
     hooks:
       # Run the linter.
       - id: ruff
-        args: [ --fix ]
+        # want to fix what we can, but not block commits for linter errors. we'll handle that in review
+        args: [ --fix, --exit-zero ]
   # Using this mirror lets us use mypyc-compiled black, which is about 2x faster
   - repo: https://github.com/psf/black-pre-commit-mirror
     rev: 24.2.0

@@ -1,11 +1,9 @@
-from typing import Optional
-
 from sqlmodel import Session, select
 
-from paper_feeds.models import Journal, ISSN
+from paper_feeds.models import ISSN, Journal
 
 
-def get_journal_by_issn(db_session: Session, issn: str) -> Optional[Journal]:
+def get_journal_by_issn(db_session: Session, issn: str) -> Journal | None:
     """
     Retrieve a journal by its ISSN.
 
@@ -21,13 +19,15 @@ def get_journal_by_issn(db_session: Session, issn: str) -> Optional[Journal]:
     return journal
 
 
-def update_journal_homepages(db_session: Session, journal_updates: dict):
+def update_journal_homepages(db_session: Session, journal_updates: dict) -> None:
     """
-    Update multiple journals' homepage URLs based on a dictionary of ISSN to homepage_url mappings.
+    Update multiple journals' homepage URLs based on a dictionary of ISSN to
+    homepage_url mappings.
 
     Args:
         db_session (Session): The database session.
-        journal_updates (dict): A dictionary where keys are ISSN values and values are homepage URLs.
+        journal_updates (dict): A dictionary where keys are ISSN values and values are
+            homepage URLs.
 
     Returns:
         None

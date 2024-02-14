@@ -4,19 +4,18 @@ from sqlmodel import Session
 from paper_feeds.models import ISSN, Journal
 from paper_feeds.repositories.journal_repository import (
     update_journal_homepages,
-    get_journal_by_issn)
+    get_journal_by_issn,
+)
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def sample_journal(memory_db):
     """Create and insert a sample journal into the database."""
 
     with Session(memory_db) as session:
         # Create sample journal
         journal = Journal(
-            title="Sample Journal",
-            publisher="Sample Publisher",
-            recent_paper_count=5
+            title="Sample Journal", publisher="Sample Publisher", recent_paper_count=5
         )
 
         # Add ISSN to the journal
@@ -35,7 +34,7 @@ def test_get_journal_by_issn(memory_db, sample_journal):
     journal_expected = sample_journal
     issn = journal_expected.issn[0].value
 
-    with (Session(memory_db) as session):
+    with Session(memory_db) as session:
         journal_from_db = get_journal_by_issn(session, issn)
 
         # verify that the sample_journal was retrieved from db
